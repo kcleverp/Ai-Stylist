@@ -1,0 +1,74 @@
+import { useState } from "react";
+import { Pressable, StyleSheet, Text, View } from "react-native";
+interface Item{
+    label:string;
+    value:string;
+}
+
+type props = {
+    items:Item[]
+    setValue:(result:string) => void
+}
+
+export default function Picker({items, setValue}:props){
+    const [selectedValue,setSelectedValue] = useState<string>("")
+
+    return(
+        <View style={style.container}>
+            {items.map((item) => {
+                const isSelected = (selectedValue === item.value)
+                return(
+                    <View key = {item.value} style={style.buttonContainer}>
+                        <Pressable
+                        style={[style.button, isSelected && style.selected ]} 
+                        onPress={() => {
+                            setValue(item.value)
+                            setSelectedValue(item.value)
+                            }}
+                        >
+                            <Text style={style.label}>{item.value}</Text>
+                        </Pressable>
+                    </View>
+                    )
+                }
+                )
+            }
+        </View>
+    )
+}
+
+
+const style= StyleSheet.create({
+    container:{
+        flexDirection:"row",
+        width:"90%",
+        height:70,
+        alignItems:"center",
+        justifyContent:"center"
+    },
+    buttonContainer:{
+        alignItems:"center",
+        justifyContent:"center",
+        width:"35%",
+        margin:5,
+        height:50,
+    },
+    button:{
+        alignItems:"center",
+        justifyContent:"center",
+        width:"100%",
+        height:"100%",
+        backgroundColor:"#333232c1",
+        borderRadius:10,
+    },
+    selected:{
+        backgroundColor:"#000000c1",
+        borderWidth:2,
+        borderColor:"#000000ff",  
+        borderRadius:10,
+    },
+    label:{
+        color:"#fff"
+    }
+    
+})

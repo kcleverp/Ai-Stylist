@@ -1,0 +1,45 @@
+# --- [ 1. Dependencies & Virtual Envs ] ---
+# 어느 폴더에 있든 라이브러리와 가상환경 폴더는 무시합니다.
+**/node_modules/
+**/venv/
+**/env/
+
+# --- [ 2. Expo & Native Build ] ---
+# Expo 빌드 및 캐시 파일들을 무시합니다.
+**/.expo/
+**/dist/
+web-build/
+expo-env.d.ts
+Front_end/.expo/devices.json
+
+# --- [ 3. Security: Critical Env Files ] ---
+# 모든 경로의 환경변수 설정 파일과 보안 키를 완벽히 차단합니다.
+**/*.env
+**/important.env
+.env*.local
+*.pem
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+*prompt.txt
+*image_requirements.txt
+
+# --- [ 4. Backend Generated Files ] ---
+# 서버가 생성한 결과물(이미지)이 저장소를 차지하지 않게 합니다.
+Back_end/static/*.png
+Back_end/static/*.jpg
+Back_end/static/*.webp
+
+# --- [ 5. Editor & System Files ] ---
+.vscode/
+.DS_Store
+Thumbs.db
+*.tsbuildinfo
+
+# --- [ 6. Debug Logs ] ---
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+.metro-health-check*
