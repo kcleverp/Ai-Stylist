@@ -4,8 +4,9 @@ import ResultModal from "@/src/component/ResultModal";
 import { useEffect, useState } from "react";
 import { ImageSourcePropType, StyleSheet, Text, View } from "react-native";
 import {requestStyleRecommendation} from "@/src/services/api"
-import { getCurrentLocation } from "@/src/services/location";
-
+import { getCurrentLocation } from "@/src/services/location"; 
+import {useFonts} from "expo-font"
+import AppText from "@/src/component/AppText";
 
 interface Recommendation {
     cap:string
@@ -29,6 +30,16 @@ interface coords{
 
 
 export default function Index() {
+
+  //전역 폰트 설정
+  const [fontsLoaded] = useFonts({
+    "Pretendard-Bold": require("@/src/assets/fonts/Pretendard-Bold.otf"),
+    "Pretendard-SemiBold": require("@/src/assets/fonts/Pretendard-SemiBold.otf"),
+    "Pretendard-Medium": require("@/src/assets/fonts/Pretendard-Medium.otf"),
+    "Pretendard-Regular": require("@/src/assets/fonts/Pretendard-Regular.otf"),
+  })
+  
+
   // state 영역
   const [userCoords, setUserCoords] = useState<coords| null>(null)
   const [userInfo,setUserInfo] = useState<setting>({userStyle:"", gender:"", height:0, weight:0})
@@ -39,7 +50,7 @@ export default function Index() {
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false)
 
-  //
+  //앱 시작시 위치정보 로딩
   useEffect(() => {
     const getlocation = async () => {
     try{
@@ -52,6 +63,10 @@ export default function Index() {
   }
   getlocation()
 },[])
+
+if (!fontsLoaded || !userCoords) {
+    return null; 
+  }
 
   //함수 영역
   const getInfo = (infoList:setting) => {
@@ -98,7 +113,7 @@ export default function Index() {
       
   return (
     <View style={style.container}>
-      <Text style={style.text}>오늘은 어디로 가나요?</Text>
+      <AppText style={style.text} variant="SemiBold">오늘은 어디로 가나요?</AppText>
       <FooterPanel getInfo={getInfo} input = {userInput} getInput={getInput} sendInfo = {sendInfo}/>
       <ResultModal isLoading ={isLoading} WhenLoadingDone={() =>setIsLoading(false)} imgUrl={imgUrl} data= {aiResponse} isVisible={isModalVisible} onClose={onClose}/>
     </View>
