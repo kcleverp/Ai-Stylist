@@ -1,5 +1,5 @@
-import { Pressable, StyleSheet, Text, ViewStyle } from "react-native"
-
+import { Pressable, StyleSheet, ViewStyle } from "react-native"
+import AppText from "./AppText"
 type props = {
     label?:string
     onPress:() => void
@@ -19,7 +19,7 @@ export default function Button({onPress,label,fontSize, fontColor, children, sty
         ])}
             onPress = {onPress}>
             {label &&
-                <Text style={{color:fontColor, fontSize:fontSize}}>{label}</Text>}
+                <AppText style={{color:fontColor, fontSize:fontSize}}>{label}</AppText>}
             {children}
         </Pressable>
     )

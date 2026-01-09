@@ -1,5 +1,5 @@
-import { StyleSheet, Text, TextInput, View } from "react-native"
-
+import { StyleSheet, TextInput, View } from "react-native"
+import AppText from "./AppText"
 
 
 type props = {
@@ -13,16 +13,18 @@ type props = {
 export default function NumInput({label,placeholder, value, setValue}:props) {
     return(
         <View style={style.container}>
-            <Text style={style.label}>{label}</Text>
-            <TextInput 
-            style = {style.input}
-            placeholder={placeholder} 
-            value={value} 
-            onChangeText={(text) => {if(isNaN(Number(text))){
-                alert("숫자만 입력해주세요")
-            }else{
-                {setValue(Number(text))}
-            }}}/>
+            <AppText style={style.label}>{label}</AppText>
+            <View style={style.inputContainer}>
+                <TextInput 
+                style = {style.input}
+                placeholder={placeholder} 
+                value={value} 
+                onChangeText={(text) => {if(isNaN(Number(text))){
+                    alert("숫자만 입력해주세요")
+                }else{
+                    {setValue(Number(text))}
+                }}}/>
+            </View>
         </View>
     )
 }
@@ -30,22 +32,27 @@ export default function NumInput({label,placeholder, value, setValue}:props) {
 const style = StyleSheet.create({
     container:{
         width:"90%",
-        height:"10%",
+        height:85,
         alignItems:"center",
         justifyContent:"center",
-        margin:20,
     },
     label:{
         color:"#f3f3f3c5"
     },
-    input:{
-        width:"50%",
-        height:"100%",
+    inputContainer:{
+        height:40,
+        width:100,
+        alignItems:"center",
+        justifyContent:"center",
         backgroundColor:"#333232c1",
         borderRadius:10,
+        margin:15,
+    },
+    input:{
         fontSize:15,
-        color:"#fcfcfcff",
+        color:"rgb(255, 241, 241)",
+        
         outline:"none",
-        margin:10
+        
     }
 })

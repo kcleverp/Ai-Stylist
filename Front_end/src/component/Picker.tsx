@@ -1,5 +1,7 @@
 import { useState } from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, View } from "react-native";
+import AppText from "./AppText";
+
 interface Item{
     label:string;
     value:string;
@@ -26,7 +28,7 @@ export default function Picker({items, setValue}:props){
                             setSelectedValue(item.value)
                             }}
                         >
-                            <Text style={style.label}>{item.value}</Text>
+                            <AppText style={style.label}>{item.value}</AppText>
                         </Pressable>
                     </View>
                     )
@@ -41,7 +43,7 @@ export default function Picker({items, setValue}:props){
 const style= StyleSheet.create({
     container:{
         flexDirection:"row",
-        width:"90%",
+        width:"70%",
         height:70,
         alignItems:"center",
         justifyContent:"center"

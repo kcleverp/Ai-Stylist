@@ -1,9 +1,9 @@
-import { ImageSourcePropType, Modal, StyleSheet, Text, View } from "react-native"
+import { ImageSourcePropType, Modal, StyleSheet, View } from "react-native"
 import {useState} from "react"
 import Button from "./Button"
 import ImageViewer from "./ImageViewer"
 import RecommendDeatils from "./RecommendDetailsModal"
-
+import AppText from "./AppText"
 interface Recommendation {
     cap:string
     top:string
@@ -30,16 +30,16 @@ export default function ResultModal({data, imgUrl, isVisible, onClose, isLoading
                 <View style={style.closeBtn}>
                     <Button fontColor="#ffffffff" fontSize={25} label="<" onPress={onClose}/>
                 </View>
-                <Text style={style.text}>이런 코디 어떄요?</Text>
+                <AppText style={style.text}>이런 코디 어때요?</AppText>
                 <View style={style.imgContainer}>
                     <ImageViewer isLoading={isLoading} WhenLoadingDone={WhenLoadingDone} imgUrl={imgUrl}/>
                     <View style={style.hashtag}>
-                        <Text style={{color:"#fff", fontSize:15 }}>#해시태그 위치</Text>
+                        <AppText style={{color:"#fff", fontSize:15 }}>#해시태그 위치</AppText>
                     </View>
                 </View>
                 <View style = {style.itemBox}>
-                    <Text style={{color:"#fff", fontSize:25, marginBottom:5}}>날씨정보 위치</Text>
-                    <Text style={{color:"#fff", fontSize:20, margin:5 }}>코디 한줄 요약 위치</Text>
+                    <AppText style={{color:"#fff", fontSize:25, marginBottom:5}}>날씨정보 위치</AppText>
+                    <AppText style={{color:"#fff", fontSize:20, margin:5 }}>코디 한줄 요약 위치</AppText>
                     <View style={style.detailsBtn}>
                         <Button fontColor="#fff" fontSize={18} label="세부 정보 보기" styles={{flex:1}} onPress={() => setIsDetailsVisible(true)} />
                     </View>

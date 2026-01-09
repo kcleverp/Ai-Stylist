@@ -1,7 +1,7 @@
-import { Modal, View, StyleSheet, Text, ScrollView } from "react-native"
+import { Modal, View, StyleSheet, ScrollView } from "react-native"
 import Button from "./Button"                
 import ItemsDetails from "./ItemsDetails"
-
+import AppText from "./AppText"
 interface Recommendation {
     cap:string
     top:string
@@ -30,19 +30,12 @@ export default function RecommendDetails({data, isVisible, onClose}:props) {
                         <Button fontColor="#fff" fontSize={15} label="X" onPress={onClose} />
                     </View>
                     <View style={style.describe}>
-                            <Text style={{fontSize:25,color:"#fff"}}>코디 상세</Text>
-                            <Text style={{fontSize:15,color:"#fff"}}>트렌드와 당신의 정보를 조합한 맞춤형 코디입니다</Text>
+                            <AppText variant="SemiBold" style={{fontSize:25,color:"#fff"}}>코디 상세</AppText>
+                            <AppText style={{fontSize:15,color:"#fff"}}>트렌드와 당신의 정보를 조합한 맞춤형 코디입니다</AppText>
                         </View>
                     <ScrollView contentContainerStyle={style.contents}>
                         <ItemsDetails data={data}/>
                     </ScrollView>
-                    {/* {data.cap &&
-                        <Text style={style.result}>모자:{data.cap}</Text>}
-                    <Text style={style.result}>상의:{data.top}</Text>
-                    <Text style={style.result}>하의:{data.bottom}</Text>
-                    <Text style={style.result}>신발:{data.shoes}</Text>
-                    {data.acc &&
-                        <Text style={style.result}>악세사리:{data.acc}</Text>} */}
                 </View>
             </View>
             

@@ -1,6 +1,6 @@
 import Button from "./Button";
-import {View, Text, StyleSheet} from "react-native"
-
+import {View, StyleSheet} from "react-native"
+import AppText from "./AppText";
 interface Recommendation {
     cap:string
     top:string
@@ -25,10 +25,10 @@ export default function ItemsDetails({data}:Props){
                 <Button key={category} onPress={() => alert([category])}>
                     <View style={style.itemsContainer}>
                         <View style={style.category}>
-                            <Text style={style.categoryText}>{category}</Text>
+                            <AppText style={style.categoryText}>{category}</AppText>
                         </View>
                         <View style={style.nameContainer}>
-                            <Text style={style.itemName}>{name}</Text>
+                            <AppText style={style.itemName}>{name}</AppText>
                         </View>
                     </View>
                 </Button>)

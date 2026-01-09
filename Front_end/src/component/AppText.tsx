@@ -3,7 +3,6 @@
  * variant 속성을 통해 Bold, SemiBold 등을 간편하게 설정할 수 있습니다.
 */
 
-
 import {Text, TextProps} from "react-native"
 import {ReactNode} from "react"
 

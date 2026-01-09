@@ -1,8 +1,10 @@
 import { useState } from "react";
-import { Modal, StyleSheet, Text, View } from "react-native";
+import { Modal, StyleSheet, View } from "react-native";
 import Button from "./Button";
 import NumInput from "./NumInput";
 import Picker from "./Picker";
+import AppText from "./AppText";
+
 interface Info{
   userStyle:string
   gender:string
@@ -53,9 +55,9 @@ export default function UserInfo({getInfo, isSettingOpen, setIsSettingOpen}:prop
                     <View style={style.closeBtn}>
                         <Button fontColor = "#fff" fontSize={15} styles={{flex:1}} onPress={() => setIsSettingOpen(false)} label="X"/>
                     </View>
-                    <Text style={style.text}>스타일</Text>
+                    <AppText style={style.text}>스타일</AppText>
                     <Picker items={items} setValue={setUserStyle}/>
-                    <Text style={style.text}>성별</Text>
+                    <AppText style={style.text}>성별</AppText>
                     <Picker items={genders} setValue={setGender}/>
                     <NumInput placeholder="" label="신장" value={String(height)} setValue={setHeight}/>
                     <NumInput placeholder="" label="체중" value={String(weight)} setValue={setWeight}/>
@@ -77,13 +79,12 @@ const style = StyleSheet.create({
         alignItems:"center",
     },
     saveBtn:{
-        position:"absolute",
-        bottom:"7%",
         justifyContent:"center",
-        width:"30%",
-        height:"15%",
+        width:55,
+        height:50,
         borderRadius:20,
-        borderWidth:1
+        borderWidth:1,
+        margin:10,
     },
     container:{
         backgroundColor:"#484545ff",
@@ -92,7 +93,8 @@ const style = StyleSheet.create({
         width:"90%",
         height:"65%",
         borderRadius:20,
-        padding:"15%",
+        padding:30,
+        gap:5,
         alignItems:"center",
     },
     closeBtn:{
