@@ -1,10 +1,10 @@
 
-import FooterPanel from "@/component/FooterPanel";
-import ResultModal from "@/component/ResultModal";
+import FooterPanel from "@/src/component/FooterPanel";
+import ResultModal from "@/src/component/ResultModal";
 import { useEffect, useState } from "react";
 import { ImageSourcePropType, StyleSheet, Text, View } from "react-native";
-import {requestStyleRecommendation} from "@/services/api"
-import { getCurrentLocation } from "@/services/location";
+import {requestStyleRecommendation} from "@/src/services/api"
+import { getCurrentLocation } from "@/src/services/location";
 
 
 interface Recommendation {
