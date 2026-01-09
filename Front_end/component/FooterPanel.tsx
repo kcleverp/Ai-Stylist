@@ -2,6 +2,7 @@ import { useState } from "react"
 import { StyleSheet, TextInput, View } from "react-native"
 import Button from "./Button"
 import UserInfo from "./UserInfo"
+
 interface Info{
   userStyle:string
   gender:string
@@ -25,11 +26,9 @@ export default function FooterPanel({sendInfo,getInfo, getInput, input}:props){
             <View style={style.inputContainer}>
                 <TextInput placeholder="#결혼식 하객룩" placeholderTextColor="#ffffffff" 
                 style={style.input} value ={input} onChangeText={(text) => {getInput(text)}} {...({style: { ...style.input, outlineStyle:'none'}} as any)}/>
-                <View style={style.sendBtn}>
-                    <Button fontColor="#fff" label="➤" onPress={() => sendInfo()}/>
-                </View>
-                <View style= {style.settingBtn}>
-                    <Button fontColor="#fff" label="⚙️" onPress={() => {isSettingOpen ? setIsSettingOpen(false):setIsSettingOpen(true)}}/>
+                <View style={style.contorlBtn}>
+                    <Button fontColor="#fff" fontSize={15} label="➤" onPress={() => sendInfo()} styles={{flex:1}}/>
+                    <Button fontColor="#fff" fontSize={15} label="⚙️" styles={{flex:1}} onPress={() => {isSettingOpen ? setIsSettingOpen(false):setIsSettingOpen(true)}}/>
                 </View>
             </View>
         </View>
@@ -43,16 +42,15 @@ const style = StyleSheet.create({
         alignItems:"center",
         width: "80%",
         height: "6%",
+
     },
 
-    settingBtn:{
-        width:45,
-        height:45,
-    },
-
-    sendBtn:{
-        width:45,
-        height:45,
+    contorlBtn:{
+        flexDirection:"row",
+        width:"30%",
+        height:"100%",
+        justifyContent:"center",
+        gap:"15%",
     },
 
     inputContainer:{
@@ -62,8 +60,7 @@ const style = StyleSheet.create({
         justifyContent:"center",
         borderWidth:1,
         borderRadius:20,
-        width:"100%",
-        height:"100%",
+        flex:1
     },
 
     input:{

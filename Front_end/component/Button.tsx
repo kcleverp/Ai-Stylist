@@ -1,31 +1,34 @@
-import { Pressable, StyleSheet, Text } from "react-native"
+import { Pressable, StyleSheet, Text, ViewStyle } from "react-native"
 
 type props = {
-    label:string
+    label?:string
     onPress:() => void
-    fontColor:string
+    fontColor?:string
+    fontSize?:number
+    children?: React.ReactNode
+    styles?: ViewStyle | ViewStyle[]
 }
 
-export default function Button({onPress,label, fontColor}:props){
+export default function Button({onPress,label,fontSize, fontColor, children, styles}:props){
     return(
-        <Pressable style={style.button} onPress = {onPress}>
-            <Text style={{color:fontColor}}>{label}</Text>
+        <Pressable
+         style = {({pressed}) =>([
+            style.button,
+            styles,
+            pressed && {opacity:0.7}
+        ])}
+            onPress = {onPress}>
+            {label &&
+                <Text style={{color:fontColor, fontSize:fontSize}}>{label}</Text>}
+            {children}
         </Pressable>
     )
 }
 
 const style = StyleSheet.create({
-    buttonContainer:{
-        alignItems:"center",
-        justifyContent:"center",
-        
-    },
     button:{
         alignItems:"center",
         justifyContent:"center",
-        width:"100%",
-        height:"100%",
-       
-
+        padding:5,
     },
 })

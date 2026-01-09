@@ -1,7 +1,7 @@
 import { ActivityIndicator, Image, ImageSourcePropType, StyleSheet, View } from "react-native"
 
 type props = {
-    imgUrl: string| ImageSourcePropType | undefined
+    imgUrl: string | ImageSourcePropType | undefined
     isLoading: boolean
     WhenLoadingDone: () => void
 }
@@ -25,8 +25,12 @@ const style = StyleSheet.create({
         ...StyleSheet.absoluteFillObject,
         alignItems:"center",
         justifyContent:"center",
-
-        backgroundColor:"#595656ff"
+        borderRadius:10,
+        backgroundColor:"#000000ff",
+        shadowColor:"#000000ff",
+        shadowOpacity:0.5,
+        shadowOffset:{width:0, height:10},
+        shadowRadius:10,
 
     },
     image:{

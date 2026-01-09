@@ -51,7 +51,7 @@ export default function UserInfo({getInfo, isSettingOpen, setIsSettingOpen}:prop
             <View style={style.overlay}>
                 <View style={style.container}>
                     <View style={style.closeBtn}>
-                        <Button fontColor = "#fff" onPress={() => {setIsSettingOpen(false)}} label="Close"/>
+                        <Button fontColor = "#fff" fontSize={15} styles={{flex:1}} onPress={() => setIsSettingOpen(false)} label="X"/>
                     </View>
                     <Text style={style.text}>스타일</Text>
                     <Picker items={items} setValue={setUserStyle}/>
@@ -60,7 +60,7 @@ export default function UserInfo({getInfo, isSettingOpen, setIsSettingOpen}:prop
                     <NumInput placeholder="" label="신장" value={String(height)} setValue={setHeight}/>
                     <NumInput placeholder="" label="체중" value={String(weight)} setValue={setWeight}/>
                     <View style={style.saveBtn}>
-                        <Button fontColor = "#fff" onPress={saveInfo} label="저장"/>
+                        <Button fontColor = "#fff" fontSize={15} styles={{flex:1}} onPress={saveInfo} label="저장"/>
                     </View>
                 </View>
             </View>
@@ -78,11 +78,10 @@ const style = StyleSheet.create({
     },
     saveBtn:{
         position:"absolute",
-        bottom:30,
-        alignItems:"center",
+        bottom:"7%",
         justifyContent:"center",
-        width:50,
-        height:50,
+        width:"30%",
+        height:"15%",
         borderRadius:20,
         borderWidth:1
     },
@@ -91,34 +90,22 @@ const style = StyleSheet.create({
         borderWidth:1,
         borderColor:"#000000ff",
         width:"90%",
-        height:500,
+        height:"65%",
         borderRadius:20,
-        padding:60,
+        padding:"15%",
         alignItems:"center",
     },
     closeBtn:{
         position:"absolute",
-        right:15,
-        top:5,
-        alignItems:"center",
+        right:0,
+        top:0,
         justifyContent:"center",
-        width:50,
-        height:50,
-        
+        width:"25%",
+        height:"15%",
     },
-    hide:{
-        display:"none"
-    },
+   
     text:{
         color:"#f3f3f3c5",
     },
-    input:{
-        color:"#fff",
-    },
-    dropDown:{
-        color:"#fff",
-    },
-    hidden:{
-        display:"none"
-    }
+   
 })
