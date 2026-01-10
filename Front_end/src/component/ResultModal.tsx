@@ -34,14 +34,14 @@ export default function ResultModal({data, imgUrl, isVisible, onClose, isLoading
                 <View style={style.imgContainer}>
                     <ImageViewer isLoading={isLoading} WhenLoadingDone={WhenLoadingDone} imgUrl={imgUrl}/>
                     <View style={style.hashtag}>
-                        <AppText style={{color:"#fff", fontSize:15 }}>#해시태그 위치</AppText>
+                        <AppText style={{color:"#dcd4d4", fontSize:15 }}>#해시태그 위치</AppText>
                     </View>
                 </View>
                 <View style = {style.itemBox}>
-                    <AppText style={{color:"#fff", fontSize:25, marginBottom:5}}>날씨정보 위치</AppText>
-                    <AppText style={{color:"#fff", fontSize:20, margin:5 }}>코디 한줄 요약 위치</AppText>
+                    <AppText style={{color:"#dcd4d4", fontSize:25, marginBottom:5}}>날씨정보 위치</AppText>
+                    <AppText style={{color:"#dcd4d4", fontSize:20, margin:5 }}>코디 한줄 요약 위치</AppText>
                     <View style={style.detailsBtn}>
-                        <Button fontColor="#fff" fontSize={18} label="세부 정보 보기" styles={{flex:1}} onPress={() => setIsDetailsVisible(true)} />
+                        <Button variant="SemiBold"fontColor="#fff" fontSize={18} label="세부 정보 보기" styles={{flex:1}} onPress={() => setIsDetailsVisible(true)} />
                     </View>
                 </View>
                 <RecommendDeatils data={data} isVisible={isDetailsVisible} onClose={onDetailsClose}/>
@@ -55,7 +55,7 @@ const style = StyleSheet.create({
         alignItems:"center",
         flex:1,
         padding:"3%",
-        backgroundColor:"#1e1e1e"
+        backgroundColor:"#131313"
     },
 
     hashtag:{
@@ -76,7 +76,7 @@ const style = StyleSheet.create({
     },
 
     text:{
-        color:"#fffafaff",
+        color:"#dcd4d4",
         fontSize:18,
         margin:5,
     },
@@ -90,11 +90,14 @@ const style = StyleSheet.create({
     },
 
     detailsBtn:{
-        backgroundColor:"#323030ff",
+        backgroundColor:"rgb(36, 36, 36)",
         width:"80%",
         alignItems:"stretch",
         height:40,
         borderRadius:30,
+        borderWidth:1,
+        borderColor: '#434242ac',      
+        borderTopColor: '#555',
         margin:10
     },
     result:{

@@ -1,15 +1,19 @@
 import { Pressable, StyleSheet, ViewStyle } from "react-native"
 import AppText from "./AppText"
+type FontVariant = "Bold" | "SemiBold" | "Medium" | "Regular"
+
 type props = {
     label?:string
     onPress:() => void
     fontColor?:string
+    variant?:FontVariant
     fontSize?:number
     children?: React.ReactNode
     styles?: ViewStyle | ViewStyle[]
 }
 
-export default function Button({onPress,label,fontSize, fontColor, children, styles}:props){
+
+export default function Button({onPress,label,fontSize, fontColor,variant, children, styles}:props){
     return(
         <Pressable
          style = {({pressed}) =>([
@@ -19,7 +23,7 @@ export default function Button({onPress,label,fontSize, fontColor, children, sty
         ])}
             onPress = {onPress}>
             {label &&
-                <AppText style={{color:fontColor, fontSize:fontSize}}>{label}</AppText>}
+                <AppText variant= {variant} style={{color:fontColor, fontSize:fontSize}}>{label}</AppText>}
             {children}
         </Pressable>
     )

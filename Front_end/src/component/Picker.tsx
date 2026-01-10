@@ -64,13 +64,11 @@ const style= StyleSheet.create({
         borderRadius:10,
     },
     selected:{
-        backgroundColor:"#000000c1",
-        borderWidth:2,
-        borderColor:"#000000ff",  
+        backgroundColor:"#131313",
         borderRadius:10,
     },
     label:{
-        color:"#fff"
+        color:"#dcd4d4"
     }
     
 })

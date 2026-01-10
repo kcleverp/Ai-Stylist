@@ -1,9 +1,11 @@
 import { useState } from "react";
-import { Modal, StyleSheet, View } from "react-native";
+import { Modal, StyleSheet, View, ScrollView } from "react-native";
 import Button from "./Button";
 import NumInput from "./NumInput";
 import Picker from "./Picker";
 import AppText from "./AppText";
+
+
 
 interface Info{
   userStyle:string
@@ -37,6 +39,11 @@ export default function UserInfo({getInfo, isSettingOpen, setIsSettingOpen}:prop
     const [weight,setWeight] = useState<number>(0)
 
     const saveInfo = () => {
+        if(!height || !weight){
+            alert("신장과 체중을 모두 입력해주세요")
+            return null
+        }
+
         const infoList = {
         "userStyle":userStyle, 
         "gender":gender,
@@ -51,19 +58,23 @@ export default function UserInfo({getInfo, isSettingOpen, setIsSettingOpen}:prop
     return (
         <Modal animationType="fade" transparent={true} visible={isSettingOpen} onRequestClose={() => setIsSettingOpen(false)}>
             <View style={style.overlay}>
-                <View style={style.container}>
-                    <View style={style.closeBtn}>
-                        <Button fontColor = "#fff" fontSize={15} styles={{flex:1}} onPress={() => setIsSettingOpen(false)} label="X"/>
-                    </View>
-                    <AppText style={style.text}>스타일</AppText>
-                    <Picker items={items} setValue={setUserStyle}/>
-                    <AppText style={style.text}>성별</AppText>
-                    <Picker items={genders} setValue={setGender}/>
-                    <NumInput placeholder="" label="신장" value={String(height)} setValue={setHeight}/>
-                    <NumInput placeholder="" label="체중" value={String(weight)} setValue={setWeight}/>
-                    <View style={style.saveBtn}>
-                        <Button fontColor = "#fff" fontSize={15} styles={{flex:1}} onPress={saveInfo} label="저장"/>
-                    </View>
+                <View style={style.cardContainer} >
+                    <ScrollView style={style.container} contentContainerStyle={style.scrollContents}>
+                        <View style={style.closeBtn}>
+                            <Button fontColor = "#fff" fontSize={15} styles={{flex:1}} onPress={() => setIsSettingOpen(false)} label="X"/>
+                        </View>
+                        <View style={style.items}>
+                            <AppText style={style.text}>스타일</AppText>
+                            <Picker items={items} setValue={setUserStyle}/>
+                            <AppText style={style.text}>성별</AppText>
+                            <Picker items={genders} setValue={setGender}/>
+                            <NumInput placeholder="입력해주세요" label="신장" value={height} setValue={setHeight}/>
+                            <NumInput placeholder="입력해주세요" label="체중" value={weight} setValue={setWeight}/>
+                            <View style={style.saveBtn}>
+                                <Button variant="SemiBold" fontColor = "#dcd4d4" fontSize={15} styles={{flex:1}} onPress={saveInfo} label="저장"/>
+                            </View>
+                        </View>
+                    </ScrollView>
                 </View>
             </View>
         </Modal>
@@ -74,28 +85,40 @@ export default function UserInfo({getInfo, isSettingOpen, setIsSettingOpen}:prop
 const style = StyleSheet.create({
     overlay:{
         flex:1,
-        backgroundColor:"#0b0b0bff",
+        backgroundColor:"#131313",
         justifyContent:"center",
         alignItems:"center",
+    },
+    cardContainer:{
+        alignItems:"center",
+        width:"100%",
+    },
+    items:{
+        gap:10,
+        alignItems:"center",
+        padding:30,
+        paddingTop:"15%",
+   
     },
     saveBtn:{
         justifyContent:"center",
         width:55,
         height:50,
-        borderRadius:20,
-        borderWidth:1,
+        borderRadius:15,
+        backgroundColor:"#131313",
         margin:10,
     },
     container:{
-        backgroundColor:"#484545ff",
+        backgroundColor:"rgb(34, 34, 34)",
         borderWidth:1,
-        borderColor:"#000000ff",
+        borderColor:"rgb(0, 0, 0)",
         width:"90%",
-        height:"65%",
+        minHeight:300,
+        flexShrink:0,
         borderRadius:20,
-        padding:30,
-        gap:5,
-        alignItems:"center",
+    },
+    scrollContents:{
+        flexGrow: 1,
     },
     closeBtn:{
         position:"absolute",

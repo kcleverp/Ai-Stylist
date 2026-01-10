@@ -5,7 +5,7 @@ import AppText from "./AppText"
 type props = {
     label:string
     placeholder:string
-    value:string
+    value:number
     setValue: (result:number) => void
 }
 
@@ -16,9 +16,11 @@ export default function NumInput({label,placeholder, value, setValue}:props) {
             <AppText style={style.label}>{label}</AppText>
             <View style={style.inputContainer}>
                 <TextInput 
+                keyboardType="numeric"
                 style = {style.input}
-                placeholder={placeholder} 
-                value={value} 
+                placeholder={placeholder}
+                placeholderTextColor="#dcd4d4" 
+                value = {value === 0 ?  "" : String(value) }
                 onChangeText={(text) => {if(isNaN(Number(text))){
                     alert("숫자만 입력해주세요")
                 }else{
@@ -31,27 +33,29 @@ export default function NumInput({label,placeholder, value, setValue}:props) {
 
 const style = StyleSheet.create({
     container:{
-        width:"90%",
+        width:"100%",
         height:85,
         alignItems:"center",
         justifyContent:"center",
+        
     },
     label:{
         color:"#f3f3f3c5"
     },
     inputContainer:{
         height:40,
-        width:100,
+        width:"60%",
         alignItems:"center",
         justifyContent:"center",
         backgroundColor:"#333232c1",
-        borderRadius:10,
+        borderRadius:15,
         margin:15,
     },
     input:{
-        fontSize:15,
-        color:"rgb(255, 241, 241)",
-        
+        fontSize:14,
+        color:"#dcd4d4",
+        width:"100%",
+        textAlign: "center",
         outline:"none",
         
     }

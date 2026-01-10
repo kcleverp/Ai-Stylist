@@ -123,13 +123,13 @@ if (!fontsLoaded || !userCoords) {
 const style = StyleSheet.create({
   container:{
     flex:1,
-    backgroundColor:"#121212",
+    backgroundColor:"#131313",
     alignItems:"center",
     justifyContent:"center"
     
   },
   text:{
-    color:"white",
+    color:"#dcd4d4",
     fontSize:24,
     margin:50,
     position:"absolute",

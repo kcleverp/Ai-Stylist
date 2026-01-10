@@ -28,7 +28,7 @@ export default function ItemsDetails({data}:Props){
                             <AppText style={style.categoryText}>{category}</AppText>
                         </View>
                         <View style={style.nameContainer}>
-                            <AppText style={style.itemName}>{name}</AppText>
+                            <AppText variant="SemiBold" style={style.itemName}>{name}</AppText>
                         </View>
                     </View>
                 </Button>)
@@ -44,7 +44,7 @@ const style = StyleSheet.create({
     },
     itemsContainer:{
         flexDirection:"row",
-        backgroundColor:"#373535ff",
+        backgroundColor:"#333232c1",
         borderWidth:1,
         borderColor: '#434242ac',      
         borderTopColor: '#555',
@@ -70,14 +70,11 @@ const style = StyleSheet.create({
         
     },
     categoryText:{
-        color:"#dbd9d9ff",
+        color:"#dcd4d4",
         fontSize:13,
-        fontWeight:"bold",
-
     },
     itemName:{
-        color:"#fff",
+        color:"#eeee",
         fontSize:16,
-        fontWeight:"bold"
     }
 })

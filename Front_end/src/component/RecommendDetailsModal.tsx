@@ -30,8 +30,8 @@ export default function RecommendDetails({data, isVisible, onClose}:props) {
                         <Button fontColor="#fff" fontSize={15} label="X" onPress={onClose} />
                     </View>
                     <View style={style.describe}>
-                            <AppText variant="SemiBold" style={{fontSize:25,color:"#fff"}}>코디 상세</AppText>
-                            <AppText style={{fontSize:15,color:"#fff"}}>트렌드와 당신의 정보를 조합한 맞춤형 코디입니다</AppText>
+                            <AppText variant="SemiBold" style={{fontSize:23,color:"#dcd4d4"}}>코디 상세</AppText>
+                            <AppText style={{fontSize:15,color:"#dcd4d4"}}>트렌드와 당신의 정보를 조합한 맞춤형 코디입니다</AppText>
                         </View>
                     <ScrollView contentContainerStyle={style.contents}>
                         <ItemsDetails data={data}/>
@@ -70,7 +70,7 @@ const style = StyleSheet.create({
         fontSize:15
     },
     details:{
-        backgroundColor:"#2e2e2eff",
+        backgroundColor:"rgb(36, 36, 36)",
         padding:10,
         justifyContent:"center",
         width:"100%",
