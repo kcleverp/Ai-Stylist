@@ -1,18 +1,20 @@
 import { ActivityIndicator, Image, ImageSourcePropType, StyleSheet, View } from "react-native"
 
 type props = {
-    imgUrl: string | ImageSourcePropType | undefined
+    imgUrl: string | ImageSourcePropType | null
     isLoading: boolean
     WhenLoadingDone: () => void
 }
 export default function ImageViewer({imgUrl, isLoading, WhenLoadingDone}:props){
+    const serverUrl = process.env.EXPO_PUBLIC_SERVER_URL;
+    const displayUrl = `${serverUrl}${imgUrl}?t=${new Date().getTime()}` || undefined
     return(
         <View style={style.container}>
          
             <View style={style.loadingOverLay}>
                 <ActivityIndicator animating={isLoading} size="large"/>
             </View>
-            <Image source={typeof imgUrl === "string" ? {uri:imgUrl}: imgUrl} style={[style.image, {opacity: isLoading ? 0 : 1}]} onLoad={WhenLoadingDone} resizeMode="cover"/>
+            <Image source={typeof displayUrl === "string" ? {uri:displayUrl}: displayUrl} style={[style.image, {opacity: isLoading ? 0 : 1}]} onLoad={WhenLoadingDone} resizeMode="cover"/>
         </View>
     )
 }

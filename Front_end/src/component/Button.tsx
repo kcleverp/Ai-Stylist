@@ -1,17 +1,16 @@
 import { Pressable, StyleSheet, ViewStyle } from "react-native"
 import AppText from "./AppText"
-type FontVariant = "Bold" | "SemiBold" | "Medium" | "Regular"
+import { FontVariants } from "../types/schema"
 
 type props = {
     label?:string
     onPress:() => void
     fontColor?:string
-    variant?:FontVariant
+    variant?:FontVariants
     fontSize?:number
     children?: React.ReactNode
     styles?: ViewStyle | ViewStyle[]
 }
-
 
 export default function Button({onPress,label,fontSize, fontColor,variant, children, styles}:props){
     return(

@@ -5,12 +5,11 @@
 
 import {Text, TextProps} from "react-native"
 import {ReactNode} from "react"
-
-type FontVariant = "Bold" | "SemiBold" | "Medium" | "Regular"
+import { FontVariants } from "../types/schema"
 
 interface AppTextProps extends TextProps{
     children:ReactNode
-    variant?:FontVariant
+    variant?:FontVariants
 }
 
 export default function AppText({children, variant="Regular", style,...props}:AppTextProps){

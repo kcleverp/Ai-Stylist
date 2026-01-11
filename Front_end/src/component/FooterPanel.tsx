@@ -1,17 +1,12 @@
 import { useState } from "react"
 import { StyleSheet, TextInput, View } from "react-native"
+import { Setting } from "../types/schema"
 import Button from "./Button"
 import UserInfo from "./UserInfo"
 
-interface Info{
-  userStyle:string
-  gender:string
-  height:number
-  weight:number
-}
 type props = {
     sendInfo: () => void
-    getInfo: (infoList:Info) => void
+    getInfo: (infoList:Setting) => void
     input: string
     getInput: (input:string) => void
 }

@@ -1,14 +1,12 @@
 import { StyleSheet, TextInput, View } from "react-native"
 import AppText from "./AppText"
 
-
 type props = {
     label:string
     placeholder:string
     value:number
     setValue: (result:number) => void
 }
-
 
 export default function NumInput({label,placeholder, value, setValue}:props) {
     return(

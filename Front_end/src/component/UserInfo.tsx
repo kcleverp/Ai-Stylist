@@ -1,20 +1,14 @@
 import { useState } from "react";
 import { Modal, StyleSheet, View, ScrollView } from "react-native";
+import { Setting } from "../types/schema";
 import Button from "./Button";
 import NumInput from "./NumInput";
 import Picker from "./Picker";
 import AppText from "./AppText";
 
 
-
-interface Info{
-  userStyle:string
-  gender:string
-  height:number
-  weight:number
-}
 type props = {
-    getInfo: (infoList:Info) => void
+    getInfo: (infoList:Setting) => void
     isSettingOpen:boolean
     setIsSettingOpen:(boolean:boolean) => void
 }

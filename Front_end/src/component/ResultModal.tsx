@@ -1,27 +1,22 @@
-import { ImageSourcePropType, Modal, StyleSheet, View } from "react-native"
-import {useState} from "react"
 import Button from "./Button"
 import ImageViewer from "./ImageViewer"
 import RecommendDeatils from "./RecommendDetailsModal"
 import AppText from "./AppText"
-interface Recommendation {
-    cap:string
-    top:string
-    bottom:string
-    shoes:string
-    acc:string
-}
+import { Contents } from "../types/schema"
+import { Modal, StyleSheet, View } from "react-native"
+import {useState} from "react"
 
 type props = {
-    data:Recommendation|null
-    isVisible:boolean
+    data: Contents|null
+    isVisible: boolean
     onClose:() => void
-    imgUrl: string|ImageSourcePropType | undefined
-    isLoading:boolean
+    isLoading: boolean
     WhenLoadingDone:() => void
 }
-export default function ResultModal({data, imgUrl, isVisible, onClose, isLoading, WhenLoadingDone}:props){
-   
+
+export default function ResultModal({data, isVisible, onClose, isLoading, WhenLoadingDone}:props){
+    
+    const {imgUrl = null, answer = null} = data?.data.recommendation || {}
     const [isDetailsVisible, setIsDetailsVisible] = useState<boolean>(false) 
     const onDetailsClose = () => setIsDetailsVisible(false)
     return(
@@ -32,7 +27,7 @@ export default function ResultModal({data, imgUrl, isVisible, onClose, isLoading
                 </View>
                 <AppText style={style.text}>이런 코디 어때요?</AppText>
                 <View style={style.imgContainer}>
-                    <ImageViewer isLoading={isLoading} WhenLoadingDone={WhenLoadingDone} imgUrl={imgUrl}/>
+                    <ImageViewer isLoading={isLoading} WhenLoadingDone={WhenLoadingDone} imgUrl = {imgUrl}/>
                     <View style={style.hashtag}>
                         <AppText style={{color:"#dcd4d4", fontSize:15 }}>#해시태그 위치</AppText>
                     </View>
@@ -44,7 +39,7 @@ export default function ResultModal({data, imgUrl, isVisible, onClose, isLoading
                         <Button variant="SemiBold"fontColor="#fff" fontSize={18} label="세부 정보 보기" styles={{flex:1}} onPress={() => setIsDetailsVisible(true)} />
                     </View>
                 </View>
-                <RecommendDeatils data={data} isVisible={isDetailsVisible} onClose={onDetailsClose}/>
+                <RecommendDeatils data={answer} isVisible={isDetailsVisible} onClose={onDetailsClose}/>
             </View>
         </Modal>
     )

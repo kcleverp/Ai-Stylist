@@ -1,18 +1,11 @@
 import Button from "./Button";
 import {View, StyleSheet} from "react-native"
 import AppText from "./AppText";
-interface Recommendation {
-    cap:string
-    top:string
-    bottom:string
-    shoes:string
-    acc:string
-}
+import { Recommendation } from "../types/schema";
 
 type Props = {
  data:Recommendation | null
 }
-
 
 export default function ItemsDetails({data}:Props){
     if(!data){

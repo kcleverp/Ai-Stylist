@@ -1,14 +1,8 @@
 import { Modal, View, StyleSheet, ScrollView } from "react-native"
+import { Recommendation } from "../types/schema"
 import Button from "./Button"                
 import ItemsDetails from "./ItemsDetails"
 import AppText from "./AppText"
-interface Recommendation {
-    cap:string
-    top:string
-    bottom:string
-    shoes:string
-    acc:string
-}
 
 type props = {
     data:Recommendation|null

@@ -1,33 +1,12 @@
-
 import FooterPanel from "@/src/component/FooterPanel";
 import ResultModal from "@/src/component/ResultModal";
+import AppText from "@/src/component/AppText";
+import { Setting, Coords, Recommendation, Contents } from "@/src/types/schema";
 import { useEffect, useState } from "react";
-import { ImageSourcePropType, StyleSheet, Text, View } from "react-native";
+import { StyleSheet,ImageSourcePropType, View } from "react-native";
 import {requestStyleRecommendation} from "@/src/services/api"
 import { getCurrentLocation } from "@/src/services/location"; 
 import {useFonts} from "expo-font"
-import AppText from "@/src/component/AppText";
-
-interface Recommendation {
-    cap:string
-    top:string
-    bottom:string
-    shoes:string
-    acc:string
-}
-
-interface setting{
-  userStyle:string
-  gender:string
-  height:number
-  weight:number
-}
-
-interface coords{
-  lat:number,
-  lon:number,
-}
-
 
 export default function Index() {
 
@@ -39,14 +18,13 @@ export default function Index() {
     "Pretendard-Regular": require("@/src/assets/fonts/Pretendard-Regular.otf"),
   })
   
-
   // state 영역
-  const [userCoords, setUserCoords] = useState<coords| null>(null)
-  const [userInfo,setUserInfo] = useState<setting>({userStyle:"", gender:"", height:0, weight:0})
+  const [userCoords, setUserCoords] = useState<Coords| null>(null)
+  const [userInfo,setUserInfo] = useState<Setting>({userStyle:"", gender:"", height:0, weight:0})
   const [userInput, setUserInput] = useState<string>("")
-  const [aiResponse,setResponse] = useState<Recommendation | null>(null)
-  const [styleList,setStyleList] = useState<Recommendation[]>([])  
-  const [imgUrl,setImgUrl] = useState<string | ImageSourcePropType | undefined>(undefined)
+
+  const [contents, setContents] = useState<Contents| null>(null)
+
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false)
 
@@ -69,7 +47,7 @@ if (!fontsLoaded || !userCoords) {
   }
 
   //함수 영역
-  const getInfo = (infoList:setting) => {
+  const getInfo = (infoList:Setting) => {
     setUserInfo(infoList)
   }
 
@@ -79,10 +57,8 @@ if (!fontsLoaded || !userCoords) {
 
   const onClose = () =>{
     setIsModalVisible(false)
-    setImgUrl(undefined)
-    setResponse(null)
+    setContents(null)
   }
-  const serverUrl = process.env.EXPO_PUBLIC_SERVER_URL;
 
   const sendInfo = async () => {
 
@@ -98,10 +74,8 @@ if (!fontsLoaded || !userCoords) {
 
     try{
         const data = await requestStyleRecommendation(info)
-        setResponse(data.answer)
-        setStyleList([data.answer, ...styleList])
-        setImgUrl(`${serverUrl}${data.imgUrl}?t=${new Date().getTime()}`)
-        
+        setContents(data)
+
     }catch(error){
         console.error("서버통신 불가",error)
         alert("서버 통신중 오류가 발생했습니다.")
@@ -115,7 +89,7 @@ if (!fontsLoaded || !userCoords) {
     <View style={style.container}>
       <AppText style={style.text} variant="SemiBold">오늘은 어디로 가나요?</AppText>
       <FooterPanel getInfo={getInfo} input = {userInput} getInput={getInput} sendInfo = {sendInfo}/>
-      <ResultModal isLoading ={isLoading} WhenLoadingDone={() =>setIsLoading(false)} imgUrl={imgUrl} data= {aiResponse} isVisible={isModalVisible} onClose={onClose}/>
+      <ResultModal isLoading ={isLoading} WhenLoadingDone={() =>setIsLoading(false)} data = {contents} isVisible={isModalVisible} onClose={onClose}/>
     </View>
   );
 }
