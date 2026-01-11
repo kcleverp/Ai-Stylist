@@ -4,9 +4,12 @@ from dotenv import load_dotenv
 from google import genai
 from google.genai import types
 from PIL import Image
+from datetime import datetime
 import json
 import os
 import requests
+import pytz
+
 
 
 server = Flask(__name__)
@@ -37,6 +40,9 @@ def createAnswer():
     userCoords = data.get("userCoords")
     lat = userCoords.get("lat")
     lon = userCoords.get("lon")
+    kst = pytz.timezone('Asia/Seoul')
+    now = datetime.now(kst)
+    timestamp = now.strftime('%Y-%m-%dT%H:%M:%S%z')
 
     openWeatherMapUrl = f"https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={OPEN_WEATHER_MAP_API_KEY}"
     
@@ -130,7 +136,23 @@ def createAnswer():
     style = answer.get("for_answer")
     print(imgUrl)
     print("성공")
-    return jsonify({"answer":style, "imgUrl": imgUrl})
+    
+    result = {
+        "status": "success",
+        "timestamp":timestamp,
+        "data": {
+            "weather":{
+                "temp":temp, 
+                "condition":description_weather,
+            },
+            "recommendation":{
+                "answer":style, 
+                "imgUrl": imgUrl, 
+            },  
+        },
+    }
+
+    return jsonify(result)
    
 if __name__ == "__main__":
     # Render가 주는 PORT 환경변수를 사용하고, 없으면 10000을 사용합니다.
