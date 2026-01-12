@@ -5,6 +5,7 @@ import AppText from "./AppText"
 import { Contents } from "../types/schema"
 import { Modal, StyleSheet, View } from "react-native"
 import {useState} from "react"
+import Hashtags from "./Hashtags"
 
 type props = {
     data: Contents|null
@@ -16,7 +17,9 @@ type props = {
 
 export default function ResultModal({data, isVisible, onClose, isLoading, WhenLoadingDone}:props){
     
-    const {imgUrl = null, answer = null} = data?.data.recommendation || {}
+    const {imgUrl = null, answer = null, analysis = null, hashtags= null} = data?.data.recommendation || {}
+    const {temp = null, emoji = null} = data?.data.weather || {}
+    const weatherInfo = `${emoji?.weatherConditionEmoji} ${temp}℃  `
     const [isDetailsVisible, setIsDetailsVisible] = useState<boolean>(false) 
     const onDetailsClose = () => setIsDetailsVisible(false)
     return(
@@ -29,14 +32,17 @@ export default function ResultModal({data, isVisible, onClose, isLoading, WhenLo
                 <View style={style.imgContainer}>
                     <ImageViewer isLoading={isLoading} WhenLoadingDone={WhenLoadingDone} imgUrl = {imgUrl}/>
                     <View style={style.hashtag}>
-                        <AppText style={{color:"#dcd4d4", fontSize:15 }}>#해시태그 위치</AppText>
+                        <Hashtags hashtags={hashtags}/>
                     </View>
                 </View>
                 <View style = {style.itemBox}>
-                    <AppText style={{color:"#dcd4d4", fontSize:25, marginBottom:5}}>날씨정보 위치</AppText>
-                    <AppText style={{color:"#dcd4d4", fontSize:20, margin:5 }}>코디 한줄 요약 위치</AppText>
+                    <View style={style.analysisBox}>
+                    {temp !== null ? (
+                        <AppText variant="SemiBold" style={{color:"#dcd4d4", fontSize:20,}}>{weatherInfo} </AppText>): null}
+                    <AppText variant="SemiBold" style={{color:"#dcd4d4", fontSize:16, }}>{analysis}</AppText>
+                    </View>
                     <View style={style.detailsBtn}>
-                        <Button variant="SemiBold"fontColor="#fff" fontSize={18} label="세부 정보 보기" styles={{flex:1}} onPress={() => setIsDetailsVisible(true)} />
+                        <Button variant="Bold"fontColor="#dcd4d4" fontSize={18} label="세부 정보 보기" styles={{flex:1}} onPress={() => setIsDetailsVisible(true)} />
                     </View>
                 </View>
                 <RecommendDeatils data={answer} isVisible={isDetailsVisible} onClose={onDetailsClose}/>
@@ -52,9 +58,20 @@ const style = StyleSheet.create({
         padding:"3%",
         backgroundColor:"#131313"
     },
-
+    analysisBox:{
+        flexDirection:"row",
+        justifyContent:"center",
+        alignItems:"center",
+        margin:10,
+        backgroundColor:"#22212176",
+        width:"100%",
+        height:60,
+        borderRadius:30,
+        borderWidth: 1,
+        borderColor: 'rgba(159, 155, 155, 0.18)'
+    },
     hashtag:{
-        backgroundColor:"#1312123a",
+        backgroundColor:"#13121287",
         width:"100%",
         alignItems:"center",
         justifyContent:"center",
@@ -62,7 +79,6 @@ const style = StyleSheet.create({
         zIndex:10,
         bottom:0,
     },
-
     imgContainer:{
         width:"95%",
         aspectRatio:3 / 4.5,
