@@ -63,19 +63,19 @@ def createAnswer():
         ai_response = client.models.generate_content(
             model = "gemini-3-flash-preview",
             contents =f"""
-            [사용자 요청]
+            [userInput]
             {userInput}
 
-            [사용자 프로필]
-            성별: {userInfo.get('gender')}
-            키: {userInfo.get('height')}cm
-            몸무게: {userInfo.get('weight')}kg
-            선호 스타일: {userInfo.get('userStyle')}
+            [userInfo]
+            gender: {userInfo.get('gender')}
+            height: {userInfo.get('height')}cm
+            weight: {userInfo.get('weight')}kg
+            perfer_style: {userInfo.get('userStyle')}
 
-            [현재 상태]
-            기온:{temp}
-            체감온도:{feels_like}
-            날씨:{description_weather}
+            [weatherCondition]
+            temperature:{temp}℃
+            feels_like:{feels_like}℃
+            description_weather:{description_weather}
             """,
             config=types.GenerateContentConfig(
                 system_instruction=SYSTEM_PROMPT,
@@ -131,12 +131,11 @@ def createAnswer():
         return jsonify({"error":str(e), "Code": 500}), 500
     
     filename = "style_output.png"
-    
+    analysis = answer.get("style_analysis")
     imgUrl = f"/static/{filename}"
     style = answer.get("for_answer")
-    print(imgUrl)
-    print("성공")
-    
+    emoji = answer.get("weatherEmoji")
+    hashtags = answer.get("hashtags")
     result = {
         "status": "success",
         "timestamp":timestamp,
@@ -144,11 +143,14 @@ def createAnswer():
             "weather":{
                 "temp":temp, 
                 "condition":description_weather,
+                "emoji":emoji
             },
             "recommendation":{
                 "answer":style, 
                 "imgUrl": imgUrl, 
-            },  
+                "analysis": analysis,
+                "hashtags": hashtags,
+            },
         },
     }
 
@@ -157,4 +159,4 @@ def createAnswer():
 if __name__ == "__main__":
     # Render가 주는 PORT 환경변수를 사용하고, 없으면 10000을 사용합니다.
     port = int(os.environ.get("PORT", 10000))
-    server.run(host='0.0.0.0', port=port)
+    server.run(host='0.0.0.0', port=port, debug=True)
