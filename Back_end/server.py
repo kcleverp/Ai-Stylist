@@ -56,9 +56,7 @@ def createAnswer():
     temp = round(main.get("temp") - 273.15, 1)
     feels_like = round(main.get("feels_like") - 273.15,1)
 
-    print(weather_data)
-    print(userInput)
-    print(userInfo)
+
     try: 
         ai_response = client.models.generate_content(
             model = "gemini-3-flash-preview",
@@ -89,31 +87,30 @@ def createAnswer():
     answer = json.loads(ai_response.text)
     print(answer)
     imageData = answer.get("for_image")
+    if (imageData) :
+        image_prompt = ""
+        for i in imageData:
+            if i == "composition":
+                continue
+            items = imageData.get(i)
+            character = items.get("gender_spec", "")
+            cap = items.get("cap", "")
+            outerwear = items.get("outerwear", "")
+            top = items.get("top", "")
+            bottom = items.get("bottom", "")
+            shoes = items.get("shoes", "")
+            acc = items.get("acc", "")
+            describe = f"{character} "
+            describe += f"{i} person is wearing {outerwear} , {top}, {bottom} and {shoes} "
+            if cap:
+                describe += f"On head, {cap} "
+            if acc:
+                describe += f"Accessory:{acc}. "
+            image_prompt += describe
     
-    layout = os.getenv("IMAGE_BASE_LAYOUT")
-    vibe = os.getenv("IMAGE_STYLE_VIBE")
-    quality = os.getenv("IMAGE_QUALITY_BOOST")
    
-    character = imageData.get("gender_spec", "")
-    cap = imageData.get("cap", "")
-    top = imageData.get("top", "")
-    bottom = imageData.get("bottom", "")
-    shoes = imageData.get("shoes", "")
-    acc = imageData.get("acc", "")
-
-    
-    image_prompt = f"{layout} {character} "
-    image_prompt += f"the person is wearing {top}, {bottom} and {shoes} "
-    
-    if cap:
-        image_prompt += f"On head, {cap} "
-    if acc:
-        image_prompt += f"Accessory:{acc}. "
-
-    image_prompt += f"{vibe} {quality} "
-
-    final_image_prompt = image_prompt + image_requirements
-
+    final_image_prompt = image_requirements + image_prompt
+    print(final_image_prompt)
     try: 
         imagen_response = client.models.generate_content(
             model = "gemini-2.5-flash-image",
@@ -130,12 +127,10 @@ def createAnswer():
         print(f"이미지 생성중 오류발생: {e}")
         return jsonify({"error":str(e), "Code": 500}), 500
     
+    style_recommendation = answer.get("style_recommendation")
     filename = "style_output.png"
-    analysis = answer.get("style_analysis")
     imgUrl = f"/static/{filename}"
-    style = answer.get("for_answer")
     emoji = answer.get("weatherEmoji")
-    hashtags = answer.get("hashtags")
     result = {
         "status": "success",
         "timestamp":timestamp,
@@ -146,10 +141,8 @@ def createAnswer():
                 "emoji":emoji
             },
             "recommendation":{
-                "answer":style, 
+                "style":style_recommendation,
                 "imgUrl": imgUrl, 
-                "analysis": analysis,
-                "hashtags": hashtags,
             },
         },
     }

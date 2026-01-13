@@ -14,13 +14,24 @@ export interface Coords{
 }
 
 /** 코디 추천 상세 구조 */
+
+
 export interface Recommendation {
     cap:string
+    outerwear:string
     top:string
     bottom:string
     shoes:string
     acc:string
 }
+
+export interface Style{
+  style_analysis: string;
+  hashtags: string[];
+  for_answer:Recommendation;
+}
+
+export type StyleRecommendation = Record<"A" | "B" | "C", Style>
 
 export interface emoji {
   "weatherConditionEmoji" : string
@@ -38,10 +49,8 @@ export interface Contents{
           "emoji":emoji
       },
       "recommendation":{
-          "answer":Recommendation, 
+          "style":StyleRecommendation, 
           "imgUrl":string | ImageSourcePropType,
-          "analysis": string,
-          "hashtags": string[]
       },  
   },
 }
