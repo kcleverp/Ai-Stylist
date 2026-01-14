@@ -14,10 +14,22 @@ type props = {
     isLoading: boolean
     WhenLoadingDone:() => void
 }
-
 export default function ResultModal({data, isVisible, onClose, isLoading, WhenLoadingDone}:props){
     
-    const {imgUrl = null, answer = null, analysis = null, hashtags= null} = data?.data.recommendation || {}
+    const [currentIndex, setCurrentIndex] = useState(0);
+    const {imgUrl = null} = data?.data.recommendation || {}
+    const styleList = data?.data.recommendation.style
+    const styleData = styleList?.map((items) =>{
+        return{
+            "style_label" : items.style_label,
+            "answer" : items.for_answer,
+            "analysis" : items.style_analysis,
+            "hashtags" : items.hashtags,
+        }
+    })
+    
+    const {answer=null, analysis = null , hashtags = null} = styleData?.[currentIndex] || {}    
+
     const {temp = null, emoji = null} = data?.data.weather || {}
     const weatherInfo = `${emoji?.weatherConditionEmoji} ${temp}℃  `
     const [isDetailsVisible, setIsDetailsVisible] = useState<boolean>(false) 

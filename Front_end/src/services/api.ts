@@ -17,7 +17,7 @@ type Info = {
 }
 
 const serverUrl = process.env.EXPO_PUBLIC_SERVER_URL;
-console.log(serverUrl)
+
 export const requestStyleRecommendation = async(data:Info) => {
 
     const response = await fetch(`${serverUrl}/create`, {

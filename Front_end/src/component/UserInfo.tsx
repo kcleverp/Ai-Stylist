@@ -45,7 +45,6 @@ export default function UserInfo({getInfo, isSettingOpen, setIsSettingOpen}:prop
         "weight":weight
     }
     setIsSettingOpen(false)
-    console.log(infoList)
     getInfo(infoList)
     }
 

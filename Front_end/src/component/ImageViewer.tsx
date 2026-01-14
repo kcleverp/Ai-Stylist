@@ -5,7 +5,11 @@ type props = {
     isLoading: boolean
     WhenLoadingDone: () => void
 }
+
+
+
 export default function ImageViewer({imgUrl, isLoading, WhenLoadingDone}:props){
+    
     const serverUrl = process.env.EXPO_PUBLIC_SERVER_URL;
     const displayUrl = `${serverUrl}${imgUrl}?t=${new Date().getTime()}` || undefined
     return(
@@ -21,7 +25,10 @@ export default function ImageViewer({imgUrl, isLoading, WhenLoadingDone}:props){
 
 const style = StyleSheet.create({
     container:{
-        flex:1
+        flex:1,
+        overflow: 'hidden',      // 삐져나온 이미지 숨김 (핵심!)
+        backgroundColor: '#000',
+        borderRadius: 20,
     },
     loadingOverLay:{
         ...StyleSheet.absoluteFillObject,
@@ -33,11 +40,10 @@ const style = StyleSheet.create({
         shadowOpacity:0.5,
         shadowOffset:{width:0, height:10},
         shadowRadius:10,
-
     },
     image:{
         width:"100%",
         height:"100%",
-        borderRadius:30,
+        borderRadius:30, 
     }
 })

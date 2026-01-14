@@ -21,11 +21,11 @@ export default function Hashtags({hashtags}:props){
 const style = StyleSheet.create({
     hashtagsContainer:{
         flexDirection:"row",
-        gap:10,
+        gap:5,
     },
     hashtag:{
         color:"#cdc4c4", 
-        fontSize:12, 
+        fontSize:11, 
         opacity: 0.8,
         backgroundColor: '#3736366c', 
         borderRadius: 20,
