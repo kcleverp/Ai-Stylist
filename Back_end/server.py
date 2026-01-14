@@ -9,7 +9,7 @@ import json
 import os
 import requests
 import pytz
-
+from image_layouts import SINGLE_STYLE, DOUBLE_STYLE, MULTI_STYLE
 
 
 server = Flask(__name__)
@@ -55,12 +55,16 @@ def createAnswer():
     main = weather_data.get("main")
     temp = round(main.get("temp") - 273.15, 1)
     feels_like = round(main.get("feels_like") - 273.15,1)
-
+    style_label = ["A"]
+    count = len(style_label)
 
     try: 
         ai_response = client.models.generate_content(
             model = "gemini-3-flash-preview",
             contents =f"""
+            [INPUT_DATA]
+            {style_label}
+
             [userInput]
             {userInput}
 
@@ -87,21 +91,28 @@ def createAnswer():
     answer = json.loads(ai_response.text)
     print(answer)
     imageData = answer.get("for_image")
+
+    if (count == 1):
+        imageLayout = SINGLE_STYLE
+    elif (count == 2):
+        imageLayout = DOUBLE_STYLE
+    elif (count >= 3):
+        imageLayout = MULTI_STYLE
+
     if (imageData) :
         image_prompt = ""
+
         for i in imageData:
-            if i == "composition":
-                continue
-            items = imageData.get(i)
-            character = items.get("gender_spec", "")
-            cap = items.get("cap", "")
-            outerwear = items.get("outerwear", "")
-            top = items.get("top", "")
-            bottom = items.get("bottom", "")
-            shoes = items.get("shoes", "")
-            acc = items.get("acc", "")
+            label = i.get("style_label")
+            character = i.get("gender_spec", "")
+            cap = i.get("cap", "")
+            outerwear = i.get("outerwear", "")
+            top = i.get("top", "")
+            bottom = i.get("bottom", "")
+            shoes = i.get("shoes", "")
+            acc = i.get("acc", "")
             describe = f"{character} "
-            describe += f"{i} person is wearing {outerwear} , {top}, {bottom} and {shoes} "
+            describe += f"In Panel {label}, a person is wearing {outerwear} , {top}, {bottom} and {shoes} "
             if cap:
                 describe += f"On head, {cap} "
             if acc:
@@ -109,7 +120,7 @@ def createAnswer():
             image_prompt += describe
     
    
-    final_image_prompt = image_requirements + image_prompt
+    final_image_prompt = imageLayout +image_requirements + image_prompt
     print(final_image_prompt)
     try: 
         imagen_response = client.models.generate_content(

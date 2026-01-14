@@ -26,16 +26,15 @@ export interface Recommendation {
 }
 
 export interface Style{
+  style_label: string,  
   style_analysis: string;
   hashtags: string[];
   for_answer:Recommendation;
 }
 
-export type StyleRecommendation = Record<"A" | "B" | "C", Style>
 
 export interface emoji {
   "weatherConditionEmoji" : string
-  "tempEmoji" : string
 }
 
 /** 서버 전체 응답 구조 (통합 State용) */
@@ -49,7 +48,7 @@ export interface Contents{
           "emoji":emoji
       },
       "recommendation":{
-          "style":StyleRecommendation, 
+          "style":Style[], 
           "imgUrl":string | ImageSourcePropType,
       },  
   },
