@@ -11,7 +11,8 @@ type props = {
 export default function ImageViewer({imgUrl, isLoading, WhenLoadingDone}:props){
     
     const serverUrl = process.env.EXPO_PUBLIC_SERVER_URL;
-    const displayUrl = `${serverUrl}${imgUrl}?t=${new Date().getTime()}` || undefined
+    const displayUrl = imgUrl ? `${serverUrl}/${imgUrl}` : undefined
+
     return(
         <View style={style.container}>
          
@@ -26,7 +27,7 @@ export default function ImageViewer({imgUrl, isLoading, WhenLoadingDone}:props){
 const style = StyleSheet.create({
     container:{
         flex:1,
-        overflow: 'hidden',      // 삐져나온 이미지 숨김 (핵심!)
+        overflow: 'hidden',      
         backgroundColor: '#000',
         borderRadius: 20,
     },

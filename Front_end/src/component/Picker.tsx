@@ -28,7 +28,7 @@ export default function Picker({items, setValue}:props){
                             setSelectedValue(item.value)
                             }}
                         >
-                            <AppText style={style.label}>{item.value}</AppText>
+                            <AppText style={style.label}>{item.label}</AppText>
                         </Pressable>
                     </View>
                     )

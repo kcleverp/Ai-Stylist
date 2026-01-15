@@ -17,15 +17,15 @@ export default function UserInfo({getInfo, isSettingOpen, setIsSettingOpen}:prop
     const [userStyle,setUserStyle] = useState<string>("")
 
     const items = [
-        { label: '스트릿', value: '스트릿' },
-        { label: '댄디', value: '댄디' },
-        { label: '미니멀', value: '미니멀' },
-        { label: "캐주얼", value: "캐주얼" },
+        { label: '스트릿', value: 'street' },
+        { label: '댄디', value: 'dendy' },
+        { label: '미니멀', value: 'minimal' },
+        { label: "캐주얼", value: "casual" },
     ]
 
     const genders = [
-        { label: '남성', value: '남성' },
-        { label: '여성', value: '여성' },
+        { label: "남성", value: 'male' },
+        { label: '여성', value: 'female' },
     ]
 
     const [gender,setGender] = useState<string>("")
@@ -44,6 +44,7 @@ export default function UserInfo({getInfo, isSettingOpen, setIsSettingOpen}:prop
         "height":height,
         "weight":weight
     }
+    
     setIsSettingOpen(false)
     getInfo(infoList)
     }

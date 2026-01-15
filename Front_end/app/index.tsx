@@ -1,10 +1,10 @@
 import FooterPanel from "@/src/component/FooterPanel";
 import ResultModal from "@/src/component/ResultModal";
 import AppText from "@/src/component/AppText";
-import { Setting, Coords, Recommendation, Contents } from "@/src/types/schema";
+import { Setting, Coords, Contents } from "@/src/types/schema";
 import { useEffect, useState } from "react";
-import { StyleSheet,ImageSourcePropType, View } from "react-native";
-import {requestStyleRecommendation} from "@/src/services/api"
+import { StyleSheet, View } from "react-native";
+import {requestStyleRecommendation, requestDelete} from "@/src/services/api"
 import { getCurrentLocation } from "@/src/services/location"; 
 import {useFonts} from "expo-font"
 
@@ -49,6 +49,7 @@ if (!fontsLoaded || !userCoords) {
   //함수 영역
   const getInfo = (infoList:Setting) => {
     setUserInfo(infoList)
+    
   }
 
   const getInput = (input:string) =>{
@@ -71,7 +72,7 @@ if (!fontsLoaded || !userCoords) {
     setIsModalVisible(true)
 
     const info = {"userInput":userInput,"userInfo":userInfo, "userCoords":userCoords}
-
+    
     try{
         const data = await requestStyleRecommendation(info)
         setContents(data)
@@ -83,13 +84,15 @@ if (!fontsLoaded || !userCoords) {
         setIsModalVisible(false)
     }
   }
-
-      
+  const whenLoadingDone = () => {
+    setIsLoading(false)
+    requestDelete(contents?.data.recommendation.imgUrl)
+  }
   return (
     <View style={style.container}>
       <AppText style={style.text} variant="SemiBold">오늘은 어디로 가나요?</AppText>
       <FooterPanel getInfo={getInfo} input = {userInput} getInput={getInput} sendInfo = {sendInfo}/>
-      <ResultModal isLoading ={isLoading} WhenLoadingDone={() =>setIsLoading(false)} data = {contents} isVisible={isModalVisible} onClose={onClose}/>
+      <ResultModal isLoading ={isLoading} WhenLoadingDone={whenLoadingDone} data = {contents} isVisible={isModalVisible} onClose={onClose}/>
     </View>
   );
 }

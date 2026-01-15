@@ -1,20 +1,4 @@
-
-interface setting{
-  userStyle: string
-  gender: string
-  height: number
-  weight: number
-}
-
-interface coords{
-    lat:number
-    lon:number
-}
-type Info = {
-    userInput: string
-    userInfo: setting
-    userCoords:coords
-}
+import { Info, ImgUrl } from "../types/schema"
 
 const serverUrl = process.env.EXPO_PUBLIC_SERVER_URL;
 
@@ -36,4 +20,25 @@ export const requestStyleRecommendation = async(data:Info) => {
     const answer = await response.json()
 
     return answer 
+}
+
+
+export const requestDelete = async (imgUrl:ImgUrl | undefined) => {
+    if (!imgUrl){
+        return null
+    }
+    try {
+        const response = await fetch(`${serverUrl}/cleanup`,{
+            "method": "DELETE",
+            "headers":{
+                "Content-Type":"application/json"
+            },
+            "body": JSON.stringify({"imgUrl":imgUrl})
+        })
+        if (response.ok){
+            return null;
+        }
+    }catch(error){
+        console.error("[네트워크 에러] 서버에 접근할 수 없습니다.", error);
+    }
 }
