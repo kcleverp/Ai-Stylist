@@ -13,6 +13,14 @@ export interface Coords{
   lon:number,
 }
 
+export interface Info{
+    userInput: string
+    userInfo: Setting
+    userCoords:Coords
+}
+
+export type ImgUrl = string | ImageSourcePropType
+
 /** 코디 추천 상세 구조 */
 
 
@@ -49,7 +57,7 @@ export interface Contents{
       },
       "recommendation":{
           "style":Style[], 
-          "imgUrl":string | ImageSourcePropType,
+          "imgUrl":ImgUrl
       },  
   },
 }

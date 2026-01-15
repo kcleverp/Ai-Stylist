@@ -5,12 +5,12 @@ from google import genai
 from google.genai import types
 from PIL import Image
 from datetime import datetime
+from image_layouts import SINGLE_STYLE, DOUBLE_STYLE, MULTI_STYLE
 import json
 import os
 import requests
 import pytz
-from image_layouts import SINGLE_STYLE, DOUBLE_STYLE, MULTI_STYLE
-
+import uuid
 
 server = Flask(__name__)
 CORS(server)
@@ -43,7 +43,9 @@ def createAnswer():
     kst = pytz.timezone('Asia/Seoul')
     now = datetime.now(kst)
     timestamp = now.strftime('%Y-%m-%dT%H:%M:%S%z')
-
+    unique_id = uuid.uuid4().hex
+    imgUrl = f"static/style_output{unique_id}.png"
+    
     openWeatherMapUrl = f"https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={OPEN_WEATHER_MAP_API_KEY}"
     
     openWeatherResponse = requests.get(openWeatherMapUrl)
@@ -58,6 +60,7 @@ def createAnswer():
     style_label = ["A"]
     count = len(style_label)
 
+    final_answer_prompt = f"{SYSTEM_PROMPT}"
     try: 
         ai_response = client.models.generate_content(
             model = "gemini-3-flash-preview",
@@ -80,16 +83,15 @@ def createAnswer():
             description_weather:{description_weather}
             """,
             config=types.GenerateContentConfig(
-                system_instruction=SYSTEM_PROMPT,
+                system_instruction=final_answer_prompt,
                 response_mime_type="application/json"
             )    
-        ) 
+        )
     except Exception as e:
         print(f"코디 생성중 오류발생: {e}")
         return jsonify({"error":str(e), "Code": 500}), 500
       
     answer = json.loads(ai_response.text)
-    print(answer)
     imageData = answer.get("for_image")
 
     if (count == 1):
@@ -121,7 +123,7 @@ def createAnswer():
     
    
     final_image_prompt = imageLayout +image_requirements + image_prompt
-    print(final_image_prompt)
+
     try: 
         imagen_response = client.models.generate_content(
             model = "gemini-2.5-flash-image",
@@ -131,7 +133,7 @@ def createAnswer():
         for part in imagen_response.candidates[0].content.parts:
             if part.inline_data is not None:
                 image = part.as_image()
-                image.save("static/style_output.png")
+                image.save(imgUrl)
                 break
 
     except Exception as e:
@@ -139,8 +141,6 @@ def createAnswer():
         return jsonify({"error":str(e), "Code": 500}), 500
     
     style_recommendation = answer.get("style_recommendation")
-    filename = "style_output.png"
-    imgUrl = f"/static/{filename}"
     emoji = answer.get("weatherEmoji")
     result = {
         "status": "success",
@@ -152,13 +152,41 @@ def createAnswer():
                 "emoji":emoji
             },
             "recommendation":{
-                "style":style_recommendation,
+                "style": style_recommendation,
                 "imgUrl": imgUrl, 
             },
         },
     }
 
     return jsonify(result)
+
+@server.route("/cleanup", methods=["DELETE"])
+def cleanup_image():
+    data = request.json
+    imgUrl = data.get("imgUrl")
+
+    if (not imgUrl):
+        return jsonify({"status": "error", "message": "No path provided"}), 404
+    filename = os.path.basename(imgUrl) 
+    safe_path = os.path.join("static", filename)
+
+    if os.path.exists(safe_path):
+
+        try:
+            os.remove(safe_path)
+            print("삭제완료")
+            result = {
+                "status":"success",
+                "message":f"imgFile:{safe_path} is deleted"
+            }
+            return jsonify(result), 200
+        except Exception as e:
+            result = {
+                "status":"error",
+                "message":str(e)
+            }
+            return jsonify(result), 500
+    return jsonify({"status": "error", "message": "File not found"}), 404
    
 if __name__ == "__main__":
     # Render가 주는 PORT 환경변수를 사용하고, 없으면 10000을 사용합니다.
