@@ -27,6 +27,7 @@ __pycache__
 *prompt.txt
 *image_requirements.txt
 *image_layouts.py
+*data
 
 # --- [ 4. Backend Generated Files ] ---
 # 서버가 생성한 결과물(이미지)이 저장소를 차지하지 않게 합니다.

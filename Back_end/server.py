@@ -45,6 +45,12 @@ def createAnswer():
     timestamp = now.strftime('%Y-%m-%dT%H:%M:%S%z')
     unique_id = uuid.uuid4().hex
     imgUrl = f"static/style_output{unique_id}.png"
+    userGender = userInfo.get("gender")
+    trendJson = f"data/trends/{userGender}.json"
+    trendData = ""
+    if (os.path.exists(trendJson)):
+        with open(trendJson, "r", encoding="utf-8") as f:
+            trendData = f.read()
     
     openWeatherMapUrl = f"https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={OPEN_WEATHER_MAP_API_KEY}"
     
@@ -60,7 +66,7 @@ def createAnswer():
     style_label = ["A"]
     count = len(style_label)
 
-    final_answer_prompt = f"{SYSTEM_PROMPT}"
+    final_answer_prompt = f"{SYSTEM_PROMPT}\n\n[Trend Data Reference]\n{trendData}"
     try: 
         ai_response = client.models.generate_content(
             model = "gemini-3-flash-preview",
