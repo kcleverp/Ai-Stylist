@@ -11,7 +11,7 @@ import os
 import requests
 import pytz
 import uuid
-
+import io
 server = Flask(__name__)
 CORS(server)
 load_dotenv("important.env")
@@ -63,10 +63,12 @@ def createAnswer():
     main = weather_data.get("main")
     temp = round(main.get("temp") - 273.15, 1)
     feels_like = round(main.get("feels_like") - 273.15,1)
-    style_label = ["A"]
-    count = len(style_label)
 
-    final_answer_prompt = f"{SYSTEM_PROMPT}\n\n[Trend Data Reference]\n{trendData}"
+ 
+    style_label = ["A"]
+    expected = len(style_label)
+
+    final_answer_prompt = f"{SYSTEM_PROMPT}\n{trendData}"
     try: 
         ai_response = client.models.generate_content(
             model = "gemini-3-flash-preview",
@@ -96,51 +98,64 @@ def createAnswer():
     except Exception as e:
         print(f"코디 생성중 오류발생: {e}")
         return jsonify({"error":str(e), "Code": 500}), 500
-      
+
     answer = json.loads(ai_response.text)
     imageData = answer.get("for_image")
 
-    if (count == 1):
+    if (expected == 1):
         imageLayout = SINGLE_STYLE
-    elif (count == 2):
+        ratio = "1:1"  
+    elif (expected == 2):
         imageLayout = DOUBLE_STYLE
-    elif (count >= 3):
+        ratio = "16:9"  
+    elif (expected >= 3):
         imageLayout = MULTI_STYLE
+        ratio = "16:9"  
 
     if (imageData) :
         image_prompt = ""
-
-        for i in imageData:
-            label = i.get("style_label")
-            character = i.get("gender_spec", "")
+        character = imageData.get("gender_spec", "")
+        image_prompt = f"character, background: {character}\n"
+        outfits = imageData.get("outfits")[:expected]
+        for i in outfits:
+            describe = ""
+            label = i.get("style_label","")
             cap = i.get("cap", "")
             outerwear = i.get("outerwear", "")
             top = i.get("top", "")
             bottom = i.get("bottom", "")
             shoes = i.get("shoes", "")
             acc = i.get("acc", "")
-            describe = f"{character} "
-            describe += f"In Panel {label}, a person is wearing {outerwear} , {top}, {bottom} and {shoes} "
+            if expected >= 2:
+                describe += f"label: {label}, "
+            describe += f"Outfit: outerwear: {outerwear}, top: {top}, bottom: {bottom}, shoes: {shoes}, "
             if cap:
-                describe += f"On head, {cap} "
+                describe += f"cap: {cap}, "
             if acc:
-                describe += f"Accessory:{acc}. "
-            image_prompt += describe
-    
-   
-    final_image_prompt = imageLayout +image_requirements + image_prompt
+                describe += f"acc: {acc}"
+            image_prompt += f"{describe}\n"
+            
+    final_image_prompt = f"{imageLayout}\n{image_requirements}\n{image_prompt}"
+    print(final_image_prompt)
 
     try: 
-        imagen_response = client.models.generate_content(
-            model = "gemini-2.5-flash-image",
-            contents = [final_image_prompt],
+        imagen_response = client.models.generate_images(
+            model = "imagen-4.0-fast-generate-001",
+            prompt = final_image_prompt,
+            config = types.GenerateImagesConfig(
+                number_of_images = 1,
+                aspect_ratio = ratio,
+                output_mime_type="image/png",
+                person_generation="ALLOW_ADULT",
+            )
         )
-
-        for part in imagen_response.candidates[0].content.parts:
-            if part.inline_data is not None:
-                image = part.as_image()
-                image.save(imgUrl)
-                break
+        
+        if imagen_response.generated_images:
+            generated_images = imagen_response.generated_images[0]
+            generated_images.image.save(imgUrl)
+            
+        else:
+            print("❌ 생성된 이미지가 없습니다.")
 
     except Exception as e:
         print(f"이미지 생성중 오류발생: {e}")
