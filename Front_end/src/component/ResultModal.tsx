@@ -15,10 +15,10 @@ type props = {
     WhenLoadingDone:() => void
 }
 export default function ResultModal({data, isVisible, onClose, isLoading, WhenLoadingDone}:props){
-    
+    const recommendation = data?.data.recommendation
     const [currentIndex, setCurrentIndex] = useState(0);
-    const {imgUrl = null} = data?.data.recommendation || {}
-    const styleList = data?.data.recommendation.style
+    const {imgUrl = null} = recommendation || {}
+    const styleList = recommendation?.style
     const styleData = styleList?.map((items) =>{
         return{
             "style_label" : items.style_label,
@@ -27,9 +27,7 @@ export default function ResultModal({data, isVisible, onClose, isLoading, WhenLo
             "hashtags" : items.hashtags,
         }
     })
-    
-    const {answer=null, analysis = null , hashtags = null} = styleData?.[currentIndex] || {}    
-
+    const {answer = null, analysis = null , hashtags = null} = styleData?.[currentIndex] || {}    
     const {temp = null, emoji = null} = data?.data.weather || {}
     const weatherInfo = `${emoji?.weatherConditionEmoji} ${temp}℃  `
     const [isDetailsVisible, setIsDetailsVisible] = useState<boolean>(false) 
@@ -51,7 +49,8 @@ export default function ResultModal({data, isVisible, onClose, isLoading, WhenLo
                     <View style={style.analysisBox}>
                     {temp !== null ? (
                         <AppText variant="SemiBold" style={{color:"#dcd4d4", fontSize:20,}}>{weatherInfo} </AppText>): null}
-                    <AppText variant="SemiBold" style={{color:"#dcd4d4", fontSize:16, }}>{analysis}</AppText>
+                    {analysis !== null ?( 
+                        <AppText variant="SemiBold" style={{color:"#dcd4d4", fontSize:16, }}>{analysis}</AppText>): null} 
                     </View>
                     <View style={style.detailsBtn}>
                         <Button variant="Bold"fontColor="#dcd4d4" fontSize={18} label="세부 정보 보기" styles={{flex:1}} onPress={() => setIsDetailsVisible(true)} />

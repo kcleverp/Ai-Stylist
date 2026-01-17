@@ -1,5 +1,5 @@
 import Button from "./Button";
-import {View, StyleSheet} from "react-native"
+import {View, StyleSheet, Linking} from "react-native"
 import AppText from "./AppText";
 import { Recommendation } from "../types/schema";
 
@@ -11,11 +11,19 @@ export default function ItemsDetails({data}:Props){
     if(!data){
         return null
     }
+
+    const getMusinsaUrl = (name:string) => {
+        const MusinsaUrl = `https://www.musinsa.com/search/goods?keyword=${encodeURIComponent(name)}`;
+        return MusinsaUrl
+    }
+    
+    
     return(
         <>
             {Object.entries(data).map(([category, name]) => (
+            
                 name &&(
-                <Button key={category} onPress={() => alert([category])}>
+                <Button key={category} onPress={() => Linking.openURL(getMusinsaUrl(name))}>
                     <View style={style.itemsContainer}>
                         <View style={style.category}>
                             <AppText style={style.categoryText}>{category}</AppText>

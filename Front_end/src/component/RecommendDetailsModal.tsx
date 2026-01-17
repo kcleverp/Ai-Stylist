@@ -71,9 +71,6 @@ const style = StyleSheet.create({
         height:"50%",
         borderTopLeftRadius:40,
         borderTopRightRadius:40,
-        // position:"absolute",
-        // bottom:0,
-        
     },
     closeBtn:{
         width:50,
