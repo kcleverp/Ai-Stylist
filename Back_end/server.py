@@ -100,6 +100,7 @@ def createAnswer():
         return jsonify({"error":str(e), "Code": 500}), 500
 
     answer = json.loads(ai_response.text)
+    
     imageData = answer.get("for_image")
 
     if (expected == 1):
@@ -114,11 +115,16 @@ def createAnswer():
 
     if (imageData) :
         image_prompt = ""
-        character = imageData.get("gender_spec", "")
-        image_prompt = f"character, background: {character}\n"
+        character = imageData.get("character", "")
+        background = imageData.get("background", "")
+        image_prompt += f"[Character] {character}\n"
+        image_prompt += f"[Background] {background}\n"
         outfits = imageData.get("outfits")[:expected]
+        image_prompt += f"{imageLayout}\n"
+        if expected >= 2:
+                image_prompt += f"{expected} separate {userGender} figures standing side by side. Each figure wears a different outfit.\n"
         for i in outfits:
-            describe = ""
+            describe = "[Outfit] "
             label = i.get("style_label","")
             cap = i.get("cap", "")
             outerwear = i.get("outerwear", "")
@@ -127,17 +133,21 @@ def createAnswer():
             shoes = i.get("shoes", "")
             acc = i.get("acc", "")
             if expected >= 2:
-                describe += f"label: {label}, "
-            describe += f"Outfit: outerwear: {outerwear}, top: {top}, bottom: {bottom}, shoes: {shoes}, "
+                describe += f"This outfit is {label}, "
+            describe += "Dressed in "
             if cap:
-                describe += f"cap: {cap}, "
+                describe += f"{cap}-"
+            if outerwear:
+                describe += f"{outerwear}-"
             if acc:
-                describe += f"acc: {acc}"
+                describe += f"{acc}-"
+            describe += f"{top}-"
+            describe += f"{bottom}-{shoes}."
             image_prompt += f"{describe}\n"
+            describe = ""
             
-    final_image_prompt = f"{imageLayout}\n{image_requirements}\n{image_prompt}"
+    final_image_prompt = f"{image_requirements}\n{image_prompt}"
     print(final_image_prompt)
-
     try: 
         imagen_response = client.models.generate_images(
             model = "imagen-4.0-fast-generate-001",
