@@ -1,11 +1,11 @@
 import FooterPanel from "@/src/component/FooterPanel";
 import ResultModal from "@/src/component/ResultModal";
 import AppText from "@/src/component/AppText";
-import { Setting, Coords, Contents } from "@/src/types/schema";
+import { Setting, Weather, Contents } from "@/src/types/schema";
 import { useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import {requestStyleRecommendation, requestDelete} from "@/src/services/api"
-import { getCurrentLocation } from "@/src/services/location"; 
+import { getCurrentWeather } from "@/src/services/weather"; 
 import {useFonts} from "expo-font"
 
 export default function Index() {
@@ -19,7 +19,7 @@ export default function Index() {
   })
   
   // state 영역
-  const [userCoords, setUserCoords] = useState<Coords| null>(null)
+  const [userWeather, setWeather] = useState<Weather| null>(null)
   const [userInfo,setUserInfo] = useState<Setting>({userStyle:"", gender:"", height:0, weight:0})
   const [userInput, setUserInput] = useState<string>("")
 
@@ -28,25 +28,30 @@ export default function Index() {
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false)
 
-  //앱 시작시 위치정보 로딩
-  useEffect(() => {
-    const getlocation = async () => {
-    try{
-        const coords = await getCurrentLocation()
-        setUserCoords(coords)
-      }
-    catch(error){
-      console.warn("위치정보를 가져오지 못함",error)
-    }
-  }
-  getlocation()
-},[])
-
-if (!fontsLoaded || !userCoords) {
-    return null; 
-  }
+  const [isWeatherFail, setIsWeatherFail] = useState<boolean>(false)
 
   //함수 영역
+
+  const getWeather = async () => {
+    try{
+        setIsWeatherFail(false)
+        const weather = await getCurrentWeather()
+        setWeather(weather)
+      }
+    catch(error){
+      setIsWeatherFail(true)
+      console.warn("날씨정보를 가져오지 못함",error)
+    }
+  }
+  //앱 시작시 날씨정보 로딩
+  useEffect(() => {
+    getWeather()
+  },[])
+
+  if (!fontsLoaded) {
+    return null;
+  }
+
   const getInfo = (infoList:Setting) => {
     setUserInfo(infoList)
     
@@ -63,15 +68,15 @@ if (!fontsLoaded || !userCoords) {
 
   const sendInfo = async () => {
 
-    if(!userCoords){
-      alert("위치정보를 불러오고 있어요. 잠시만 기다려주세요")
+    if(!userWeather){
+      alert("날시정보를 불러오고 있어요. 잠시만 기다려주세요")
       return null
     }
 
     setIsLoading(true)
     setIsModalVisible(true)
 
-    const info = {"userInput":userInput,"userInfo":userInfo, "userCoords":userCoords}
+    const info = {"userInput":userInput,"userInfo":userInfo, "userWeather":userWeather}
     
     try{
         const data = await requestStyleRecommendation(info)
