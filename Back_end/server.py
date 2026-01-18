@@ -29,17 +29,47 @@ if os.path.exists("image_requirements.txt"):
 else:
     image_requirements = "지정된 이미지 프롬프트 없음 [오류]라고 출력"
 
+
 OPEN_WEATHER_MAP_API_KEY = os.getenv("OPEN_WEATHER_MAP_API_KEY")
 
+#날씨 정보 수집 로직
+@server.route("/weather", methods=["POST"])
+def getWeather():
+    data = request.json
+    lat = data.get("lat")
+    lon = data.get("lon")
+    openWeatherMapUrl = f"https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={OPEN_WEATHER_MAP_API_KEY}"
+    try:
+        openWeatherResponse = requests.get(openWeatherMapUrl)
+        weather_data = openWeatherResponse.json()
+        weather_list = weather_data.get("weather",[{}])
+        description_weather = weather_list[0].get("description","clear sky")
+        main = weather_data.get("main")
+        temp = round(main.get("temp") - 273.15, 1)
+        feels_like = round(main.get("feels_like") - 273.15,1)
+    except Exception as e:
+        print(f"날씨 API 에러 발생: {e}")
+        return jsonify({"error":str(e), "Code": 500}), 500
+    
+    weather = {
+        "description_weather": description_weather,
+        "temp": temp,
+        "feels_like": feels_like
+    }
+    print(weather)
+    return jsonify(weather)
 
+#코디 생성 로직
 @server.route("/create",methods=["POST"])
 def createAnswer():
+    
     data = request.json
     userInput = data.get("userInput")
     userInfo = data.get("userInfo")
-    userCoords = data.get("userCoords")
-    lat = userCoords.get("lat")
-    lon = userCoords.get("lon")
+    weather = data.get("userWeather")
+    description_weather = weather.get("description_weather")
+    temp = weather.get("temp")
+    feels_like = weather.get("feels_like")
     kst = pytz.timezone('Asia/Seoul')
     now = datetime.now(kst)
     timestamp = now.strftime('%Y-%m-%dT%H:%M:%S%z')
@@ -51,24 +81,13 @@ def createAnswer():
     if (os.path.exists(trendJson)):
         with open(trendJson, "r", encoding="utf-8") as f:
             trendData = f.read()
-    
-    openWeatherMapUrl = f"https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={OPEN_WEATHER_MAP_API_KEY}"
-    
-    openWeatherResponse = requests.get(openWeatherMapUrl)
-    if openWeatherResponse.status_code != 200:
-        print(f"날씨 API 에러 발생: {weather_data}")
-    weather_data = openWeatherResponse.json()
-    weather_list = weather_data.get("weather",[{}])
-    description_weather = weather_list[0].get("description","clear sky")
-    main = weather_data.get("main")
-    temp = round(main.get("temp") - 273.15, 1)
-    feels_like = round(main.get("feels_like") - 273.15,1)
 
  
     style_label = ["A"]
     expected = len(style_label)
 
     final_answer_prompt = f"{SYSTEM_PROMPT}\n{trendData}"
+    print(final_answer_prompt)
     try: 
         ai_response = client.models.generate_content(
             model = "gemini-3-flash-preview",
@@ -101,6 +120,7 @@ def createAnswer():
 
     answer = json.loads(ai_response.text)
     
+    #이미지 생성 로직
     imageData = answer.get("for_image")
 
     if (expected == 1):
@@ -171,6 +191,7 @@ def createAnswer():
         print(f"이미지 생성중 오류발생: {e}")
         return jsonify({"error":str(e), "Code": 500}), 500
     
+    #프론트 엔드로 데이터 파싱 로직
     style_recommendation = answer.get("style_recommendation")
     emoji = answer.get("weatherEmoji")
     result = {
@@ -191,6 +212,7 @@ def createAnswer():
 
     return jsonify(result)
 
+#이미지 삭제 로직
 @server.route("/cleanup", methods=["DELETE"])
 def cleanup_image():
     data = request.json

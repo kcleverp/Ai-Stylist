@@ -8,15 +8,16 @@ export interface Setting{
   weight:number
 }
 
-export interface Coords{
-  lat:number,
-  lon:number,
+export interface Weather{
+  description_weather: string,
+  temp: number,
+  feels_like: number
 }
 
 export interface Info{
     userInput: string
     userInfo: Setting
-    userCoords:Coords
+    userWeather: Weather
 }
 
 export type ImgUrl = string | ImageSourcePropType
