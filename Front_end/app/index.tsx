@@ -7,6 +7,7 @@ import { StyleSheet, View } from "react-native";
 import {requestStyleRecommendation, requestDelete} from "@/src/services/api"
 import { getCurrentWeather } from "@/src/services/weather"; 
 import {useFonts} from "expo-font"
+import WeatherErrorModal from "@/src/component/WeatherErrorModal";
 
 export default function Index() {
 
@@ -37,6 +38,8 @@ export default function Index() {
         setIsWeatherFail(false)
         const weather = await getCurrentWeather()
         setWeather(weather)
+        console.log("날씨 정보를 가져왔어요")
+        console.log(weather)
       }
     catch(error){
       setIsWeatherFail(true)
@@ -93,8 +96,25 @@ export default function Index() {
     setIsLoading(false)
     requestDelete(contents?.data.recommendation.imgUrl)
   }
+
+  const whenWheatherErrorModalClose = () => {
+    const baseWeather = {
+      description_weather: "clearSky",
+      temp: 10,
+      feels_like: 8
+    }
+    setWeather(baseWeather)
+    setIsWeatherFail(false)
+    alert("날씨 정보를 가져올 수 없어서 기본값으로 설정했어요.\n\n• 날씨: 맑음\n• 기온: 10°C\n• 체감: 8°C");
+  }
+
+  const retry = () => {
+    console.log("날씨 정보를 다시 가져올게요")
+    getWeather()
+  }
   return (
     <View style={style.container}>
+      <WeatherErrorModal visible={isWeatherFail} onClose={whenWheatherErrorModalClose} retry={retry}/>
       <AppText style={style.text} variant="SemiBold">오늘은 어디로 가나요?</AppText>
       <FooterPanel getInfo={getInfo} input = {userInput} getInput={getInput} sendInfo = {sendInfo}/>
       <ResultModal isLoading ={isLoading} WhenLoadingDone={whenLoadingDone} data = {contents} isVisible={isModalVisible} onClose={onClose}/>
