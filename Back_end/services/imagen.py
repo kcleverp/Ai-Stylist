@@ -5,17 +5,14 @@ import os
 
 
 
-def imagen(answer, style_label, gender, client):
+def imagen(imageData, expected, gender, client):
     if os.path.exists("image_requirements.txt"):
         with open("image_requirements.txt","r",encoding="utf-8") as f:
             image_requirements = f.read()
     else:
         image_requirements = "지정된 이미지 프롬프트 없음 [오류]라고 출력"
-
-    imageData = answer.get("for_image")
     unique_id = uuid.uuid4().hex
     imgUrl = f"static/style_output{unique_id}.png"
-    expected = len(style_label)
     if (expected == 1):
         imageLayout = SINGLE_STYLE
         ratio = "1:1"  
@@ -60,7 +57,6 @@ def imagen(answer, style_label, gender, client):
             describe = ""
             
     final_image_prompt = f"{image_requirements}\n{image_prompt}"
-    print(final_image_prompt)
     try: 
         imagen_response = client.models.generate_images(
             model = "imagen-4.0-fast-generate-001",
@@ -79,9 +75,9 @@ def imagen(answer, style_label, gender, client):
             
         else:
             print("❌ 생성된 이미지가 없습니다.")
-            return None
+            return "failed"
         return imgUrl
 
     except Exception as e:
         print(f"이미지 생성중 오류발생: {e}")
-        return None
+        return "failed"

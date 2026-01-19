@@ -6,18 +6,16 @@ from google.genai import types
 from services.imagen import imagen
 from PIL import Image
 from datetime import datetime
-from image_layouts import SINGLE_STYLE, DOUBLE_STYLE, MULTI_STYLE
 import json
 import os
 import requests
 import pytz
-import uuid
 import re
 server = Flask(__name__)
 CORS(server)
 load_dotenv("important.env")
 client = genai.Client()
-
+style_label = ["A"]
 if os.path.exists("prompt.txt"):
     with open("prompt.txt","r",encoding="utf-8") as f:
         SYSTEM_PROMPT = f.read()
@@ -98,9 +96,6 @@ def createAnswer():
         with open(trendJson, "r", encoding="utf-8") as f:
             trendData = f.read()
 
- 
-    style_label = ["A"]
-
     final_answer_prompt = f"{SYSTEM_PROMPT}\n{trendData}"
     print(final_answer_prompt)
     try: 
@@ -133,10 +128,27 @@ def createAnswer():
         answer = json.loads(raw_ai_response)
     except Exception as e:
         print(f"코디 생성중 오류발생: {e}")
-        return jsonify({"error":str(e), "Code": 500}), 500
-
+        result = {
+        "status": "failed",
+        "timestamp":timestamp,
+        "data": {
+            "weather":{
+                "temp":None, 
+                "condition":None,
+                "emoji":None
+                },
+            "recommendation":{
+                "style": None,
+                "for_image": None,
+                "imgUrl": None, 
+                },
+            },
+        }
+        return jsonify(result)
     #이미지 생성 로직
-    imgUrl = imagen(answer, style_label, gender, client)
+    imageData = answer.get("for_image")
+    expected = len(style_label)
+    imgUrl = imagen(imageData, expected, gender, client)
     
     #프론트 엔드로 데이터 파싱 로직
     style_recommendation = answer.get("style_recommendation")
@@ -152,12 +164,15 @@ def createAnswer():
             },
             "recommendation":{
                 "style": style_recommendation,
+                "for_image":imageData,
                 "imgUrl": imgUrl, 
             },
         },
     }
 
     return jsonify(result)
+
+
 
 #이미지 삭제 로직
 @server.route("/cleanup", methods=["DELETE"])

@@ -40,7 +40,20 @@ export interface Style{
   hashtags: string[];
   for_answer:Recommendation;
 }
-
+export interface Outfit{
+  style_label: string,
+  cap: string,
+  outerwear: string,
+  top: string,
+  bottom: string,
+  shoes: string,
+  acc: string,
+}
+export interface ForImage{
+  character:string,
+  background:string,
+  outfits:Outfit[]
+}
 
 export interface emoji {
   "weatherConditionEmoji" : string
@@ -58,6 +71,7 @@ export interface Contents{
       },
       "recommendation":{
           "style":Style[], 
+          "for_image":ForImage,
           "imgUrl":ImgUrl
       },  
   },
