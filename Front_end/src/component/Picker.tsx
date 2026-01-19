@@ -10,24 +10,18 @@ interface Item{
 type props = {
     items:Item[]
     setValue:(result:string) => void
+    value:string
 }
 
-export default function Picker({items, setValue}:props){
-    const [selectedValue,setSelectedValue] = useState<string>("")
-
+export default function Picker({items, value, setValue}:props){
     return(
         <View style={style.container}>
             {items.map((item) => {
-                const isSelected = (selectedValue === item.value)
                 return(
                     <View key = {item.value} style={style.buttonContainer}>
                         <Pressable
-                        style={[style.button, isSelected && style.selected ]} 
-                        onPress={() => {
-                            setValue(item.value)
-                            setSelectedValue(item.value)
-                            }}
-                        >
+                        style={[style.button, (value === item.value) && style.selected ]} 
+                        onPress={() => setValue(item.value)}>
                             <AppText style={style.label}>{item.label}</AppText>
                         </Pressable>
                     </View>

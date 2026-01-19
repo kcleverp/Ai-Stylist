@@ -8,7 +8,7 @@ type props = {
     setValue: (result:number) => void
 }
 
-export default function NumInput({label,placeholder, value, setValue}:props) {
+export default function NumInput({label, placeholder, value, setValue}:props) {
     return(
         <View style={style.container}>
             <AppText style={style.label}>{label}</AppText>
@@ -16,6 +16,7 @@ export default function NumInput({label,placeholder, value, setValue}:props) {
                 <TextInput 
                 keyboardType="numeric"
                 style = {style.input}
+                maxLength={3}
                 placeholder={placeholder}
                 placeholderTextColor="#dcd4d4" 
                 value = {value === 0 ?  "" : String(value) }

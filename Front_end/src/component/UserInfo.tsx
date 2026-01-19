@@ -59,9 +59,9 @@ export default function UserInfo({getInfo, isSettingOpen, setIsSettingOpen}:prop
                         </View>
                         <View style={style.items}>
                             <AppText style={style.text}>스타일</AppText>
-                            <Picker items={items} setValue={setUserStyle}/>
+                            <Picker items={items} value={userStyle} setValue={setUserStyle}/>
                             <AppText style={style.text}>성별</AppText>
-                            <Picker items={genders} setValue={setGender}/>
+                            <Picker items={genders} value={gender} setValue={setGender}/>
                             <NumInput placeholder="입력해주세요" label="신장" value={height} setValue={setHeight}/>
                             <NumInput placeholder="입력해주세요" label="체중" value={weight} setValue={setWeight}/>
                             <View style={style.saveBtn}>

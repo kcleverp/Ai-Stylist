@@ -19,7 +19,7 @@ export default function FooterPanel({sendInfo,getInfo, getInput, input}:props){
         <View style={style.container}>
             <UserInfo isSettingOpen={isSettingOpen} setIsSettingOpen={setIsSettingOpen} getInfo={getInfo}/>
             <View style={style.inputContainer}>
-                <TextInput placeholder="#결혼식 하객룩" placeholderTextColor="rgb(200, 200, 200)" 
+                <TextInput placeholder="#결혼식 하객룩" placeholderTextColor="rgb(200, 200, 200)" maxLength={50}
                 style={style.input} value ={input} onChangeText={(text) => {getInput(text)}} {...({style: { ...style.input, outlineStyle:'none'}} as any)}/>
                 <View style={style.contorlBtn}>
                     <Button fontColor="rgb(200, 200, 200)" fontSize={15} label="➤" onPress={() => sendInfo()} styles={{flex:1}}/>

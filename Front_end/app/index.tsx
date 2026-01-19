@@ -49,6 +49,13 @@ export default function Index() {
   //앱 시작시 날씨정보 로딩
   useEffect(() => {
     getWeather()
+    const cleanInfo = {
+        "userStyle": "casual", 
+        "gender": "male",
+        "height": 170 ,
+        "weight": 60 
+      }
+    setUserInfo(cleanInfo)
   },[])
 
   if (!fontsLoaded) {
@@ -56,8 +63,17 @@ export default function Index() {
   }
 
   const getInfo = (infoList:Setting) => {
-    setUserInfo(infoList)
-    
+    const userStyle = infoList.userStyle
+    const userGender = infoList.gender
+    const userHeight = infoList.height 
+    const userWeight = infoList.weight 
+    const cleanInfo = {
+        "userStyle": userStyle || "casual", 
+        "gender": userGender || "male",
+        "height":  typeof userHeight === "number" &&(userHeight < 200 && userHeight >= 100 ) ? userHeight : 170 ,
+        "weight": typeof userWeight === "number" && (userWeight < 200 && userWeight >= 25 ) ? userWeight : 60
+      }
+    setUserInfo(cleanInfo)
   }
 
   const getInput = (input:string) =>{
