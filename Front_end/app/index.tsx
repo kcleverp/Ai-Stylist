@@ -48,6 +48,7 @@ export default function Index() {
   }
   //앱 시작시 날씨정보 로딩
   useEffect(() => {
+    console.log("날씨정보를 받아올게요")
     getWeather()
     const cleanInfo = {
         "userStyle": "casual", 
@@ -86,28 +87,40 @@ export default function Index() {
   }
 
   const sendInfo = async () => {
-
     if(!userWeather){
       alert("날시정보를 불러오고 있어요. 잠시만 기다려주세요")
       return null
     }
-
     setIsLoading(true)
     setIsModalVisible(true)
-
     const info = {"userInput":userInput,"userInfo":userInfo, "userWeather":userWeather}
-    
-    try{
-        const data = await requestStyleRecommendation(info)
-        setContents(data)
-
-    }catch(error){
-        console.error("서버통신 불가",error)
-        alert("서버 통신중 오류가 발생했습니다.")
-        setIsLoading(false)
-        setIsModalVisible(false)
+    const attemptFetch = async(retriesLeft:number) => {
+        try{
+          const data = await requestStyleRecommendation(info)
+          if (data.status === "failed"){
+            if(retriesLeft > 0){
+              console.log(`생성 실패, 재시도 남은 횟수:${retriesLeft}`)
+              await new Promise(resolve => setTimeout(resolve, 1000))
+              return attemptFetch(retriesLeft - 1);
+            }else{
+              alert("현재 서버 부하가 커서 코디를 생성할 수 없습니다. 잠시 후 다시 시도해주세요.");
+              setIsLoading(false);
+              setIsModalVisible(false);
+              return null
+            }
+          }
+          setContents(data)
+        }catch(error){
+          console.error("서버통신 불가",error)
+          alert("서버 통신중 오류가 발생했습니다.")
+          setIsLoading(false)
+          setIsModalVisible(false)
+          return null
+      }
     }
+    await attemptFetch(2)
   }
+
   const whenLoadingDone = () => {
     setIsLoading(false)
     requestDelete(contents?.data.recommendation.imgUrl)
