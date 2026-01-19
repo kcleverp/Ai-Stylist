@@ -172,7 +172,16 @@ def createAnswer():
 
     return jsonify(result)
 
-
+#이미지 재요청 로직
+@server.route("/imagen", methods=["POST"])
+def create_image():
+    data = request.json
+    imageData = data.get("for_image")
+    gender = data.get("gender")
+    expected = len(style_label)
+    imgUrl = imagen(imageData, expected, gender, client)
+    result = {"status":"success", "imgUrl": imgUrl}
+    return jsonify(result)
 
 #이미지 삭제 로직
 @server.route("/cleanup", methods=["DELETE"])
