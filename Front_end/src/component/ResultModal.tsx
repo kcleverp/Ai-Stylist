@@ -9,15 +9,16 @@ import Hashtags from "./Hashtags"
 
 type props = {
     data: Contents|null
+    gender:string
     isVisible: boolean
     onClose:() => void
     isLoading: boolean
     WhenLoadingDone:() => void
 }
-export default function ResultModal({data, isVisible, onClose, isLoading, WhenLoadingDone}:props){
+export default function ResultModal({data, gender, isVisible, onClose, isLoading, WhenLoadingDone}:props){
     const recommendation = data?.data.recommendation
     const [currentIndex, setCurrentIndex] = useState(0);
-    const {imgUrl = null} = recommendation || {}
+    const {imgUrl = null, for_image = null} = recommendation || {}
     const styleList = recommendation?.style
     const styleData = styleList?.map((items) =>{
         return{
@@ -40,7 +41,7 @@ export default function ResultModal({data, isVisible, onClose, isLoading, WhenLo
                 </View>
                 <AppText style={style.text}>이런 코디 어때요?</AppText>
                 <View style={style.imgContainer}>
-                    <ImageViewer isLoading={isLoading} WhenLoadingDone={WhenLoadingDone} imgUrl = {imgUrl}/>
+                    <ImageViewer isLoading={isLoading} gender={gender} WhenLoadingDone={WhenLoadingDone} imgUrl = {imgUrl} forImage = {for_image} />
                     <View style={style.hashtag}>
                         <Hashtags hashtags={hashtags}/>
                     </View>

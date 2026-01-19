@@ -1,4 +1,4 @@
-import { Info, ImgUrl } from "../types/schema"
+import { Info, ImgUrl,ForImage } from "../types/schema"
 
 const serverUrl = process.env.EXPO_PUBLIC_SERVER_URL;
 
@@ -22,6 +22,25 @@ export const requestStyleRecommendation = async(data:Info) => {
     return answer 
 }
 
+export const requestImagen = async (forImage:ForImage, gender:string) => {
+    try{
+        const response = await fetch(`${serverUrl}/imagen`,{
+            "method":"POST",
+            "headers":{
+                "Content-Type":"application/json"
+            },
+            "body": JSON.stringify({"for_image":forImage, "gender":gender})
+        })
+        if(!response.ok){
+            return null
+        }
+        const answer = await response.json()
+        const imgUrl = answer.imgUrl 
+        return imgUrl
+    }catch(error){
+
+    }
+}
 
 export const requestDelete = async (imgUrl:ImgUrl | undefined) => {
     if (!imgUrl){
