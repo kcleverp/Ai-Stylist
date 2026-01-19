@@ -11,7 +11,7 @@ import os
 import requests
 import pytz
 import uuid
-import io
+import re
 server = Flask(__name__)
 CORS(server)
 load_dotenv("important.env")
@@ -62,10 +62,31 @@ def getWeather():
 #코디 생성 로직
 @server.route("/create",methods=["POST"])
 def createAnswer():
-    
     data = request.json
-    userInput = data.get("userInput")
+    raw_userInput = data.get("userInput","")
+    trim_text = " ".join(raw_userInput.split())
+    clean_text = re.sub(r"[ㄱ-ㅎㅏ-ㅣ]+", "", trim_text).strip()
+    forbidden_keywords = ["ignore", "previous instructions", "지침", "시스템", "설정", "프롬프트", "무시" , "instruction", "prompt", "setting", "rule"]
+    if len(clean_text) > 50 or len(clean_text) == 0: #글자 길이 확인
+        clean_text = "일상생활 룩"
+    elif not any(ord('가') <= ord(c) <= ord('힣') or ord('a') <= ord(c.lower()) <= ord('z') for c in clean_text): #유효한 질문인지 확인
+        clean_text = "일상생활 룩"
+    elif any(keyword in clean_text.lower() for keyword in forbidden_keywords): #금지어가 들어가있는지 확인
+        return jsonify({"error":"부적절한 입력", "Code": 500}), 500
+    else:
+        userInput = clean_text
+
     userInfo = data.get("userInfo")
+    userStyle = userInfo.get('userStyle')
+    userGender = userInfo.get('gender')
+    userHeight = userInfo.get('height')
+    userWeight = userInfo.get('weight')
+    cleanInfo = {
+        "style": userStyle if (userStyle in ["street","dendy","minimal","casual"]) else"casual", 
+        "gender": userGender if (userGender in ["male","female"] ) else "male",
+        "height":  userHeight if userHeight is not None and (userHeight < 200 and userHeight >= 100 ) else  170 ,
+        "weight":  userWeight if userWeight is not None and (userWeight < 200 and userWeight >= 25 ) else 60
+        }
     weather = data.get("userWeather")
     description_weather = weather.get("description_weather")
     temp = weather.get("temp")
@@ -75,8 +96,11 @@ def createAnswer():
     timestamp = now.strftime('%Y-%m-%dT%H:%M:%S%z')
     unique_id = uuid.uuid4().hex
     imgUrl = f"static/style_output{unique_id}.png"
-    userGender = userInfo.get("gender")
-    trendJson = f"data/trends/{userGender}.json"
+    gender = cleanInfo.get("gender")
+    height = cleanInfo.get('height')
+    weight = cleanInfo.get('weight')
+    style = cleanInfo.get('style')
+    trendJson = f"data/trends/{gender}.json"
     trendData = ""
     if (os.path.exists(trendJson)):
         with open(trendJson, "r", encoding="utf-8") as f:
@@ -99,10 +123,10 @@ def createAnswer():
             {userInput}
 
             [userInfo]
-            gender: {userInfo.get('gender')}
-            height: {userInfo.get('height')}cm
-            weight: {userInfo.get('weight')}kg
-            perfer_style: {userInfo.get('userStyle')}
+            gender: {gender}
+            height: {height}cm
+            weight: {weight}kg
+            perfer_style: {style}
 
             [weatherCondition]
             temperature:{temp}℃
@@ -114,12 +138,12 @@ def createAnswer():
                 response_mime_type="application/json"
             )    
         )
+        raw_ai_response = ai_response.text
+        answer = json.loads(raw_ai_response)
     except Exception as e:
         print(f"코디 생성중 오류발생: {e}")
         return jsonify({"error":str(e), "Code": 500}), 500
 
-    answer = json.loads(ai_response.text)
-    
     #이미지 생성 로직
     imageData = answer.get("for_image")
 
@@ -142,7 +166,7 @@ def createAnswer():
         outfits = imageData.get("outfits")[:expected]
         image_prompt += f"{imageLayout}\n"
         if expected >= 2:
-                image_prompt += f"{expected} separate {userGender} figures standing side by side. Each figure wears a different outfit.\n"
+                image_prompt += f"{expected} separate {gender} figures standing side by side. Each figure wears a different outfit.\n"
         for i in outfits:
             describe = "[Outfit] "
             label = i.get("style_label","")
