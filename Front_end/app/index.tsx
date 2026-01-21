@@ -3,13 +3,13 @@ import ResultModal from "@/src/component/ResultModal";
 import AppText from "@/src/component/AppText";
 import { Setting, Weather, Contents } from "@/src/types/schema";
 import { useEffect, useState } from "react";
-import { Alert, StyleSheet, View } from "react-native";
+import { Alert, StyleSheet, View, ActivityIndicator, Image } from "react-native";
 import {requestStyleRecommendation, requestDelete} from "@/src/services/api"
 import { getCurrentWeather } from "@/src/services/weather"; 
 import {useFonts} from "expo-font"
 import WeatherErrorModal from "@/src/component/WeatherErrorModal";
 import * as Location from "expo-location"
-
+import Button from "@/src/component/Button";
 export default function Index() {
 
   //전역 폰트 설정
@@ -31,14 +31,16 @@ export default function Index() {
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false)
 
   const [isWeatherFail, setIsWeatherFail] = useState<boolean>(false)
-
+  const [isWeatherLoading, setIsWeatherLoading] = useState<boolean>(false)
   //함수 영역
 
   const getWeather = async () => {
     try{
+        setIsWeatherLoading(true)
         setIsWeatherFail(false)
         const weather = await getCurrentWeather()
         setWeather(weather)
+        setIsWeatherLoading(false)
         console.log("날씨 정보를 가져왔어요")
         console.log(weather)
       }
@@ -47,10 +49,12 @@ export default function Index() {
       console.warn("날씨정보를 가져오지 못함",error)
     }
   }
+
   const appinit = async() => {
     const { status: existingStatus } = await Location.getForegroundPermissionsAsync();
     if (existingStatus ==="granted"){
       getWeather()
+
     }else if(existingStatus === "undetermined"){
       Alert.alert(
         "위치권한 안내",
@@ -78,11 +82,13 @@ export default function Index() {
       console.log("위치 권한 거부됨")
     }
   }
+
   //앱 시작시 날씨정보 로딩
   useEffect(() => {
     console.log("날씨정보를 받아올게요")
     const baseWeather = {
       description_weather: "clearSky",
+      weatherIcon:"https://openweathermap.org/img/wn/01d@2x.png",
       temp: 10,
       feels_like: 8
     }
@@ -167,6 +173,7 @@ export default function Index() {
   const whenWheatherErrorModalClose = () => {
     const baseWeather = {
       description_weather: "clearSky",
+      weatherIcon:"https://openweathermap.org/img/wn/01d@2x.png",
       temp: 10,
       feels_like: 8
     }
@@ -179,10 +186,24 @@ export default function Index() {
     console.log("날씨 정보를 다시 가져올게요")
     getWeather()
   }
+  const {temp = null, description_weather = null, weatherIcon = undefined, feels_like = null} = userWeather || {}
+  console.log(weatherIcon)
   return (
     <View style={style.container}>
       <WeatherErrorModal visible={isWeatherFail} onClose={whenWheatherErrorModalClose} retry={retry}/>
-      <AppText style={style.text} variant="SemiBold">오늘은 어디로 가나요?</AppText>
+      <View style={style.weatherContainer}>
+        <AppText style={{color:"#dcd4d4", fontSize:16, letterSpacing: 1.5}}>현재 날씨정보</AppText>
+        <Button onPress={retry}styles={style.button} variant="Bold" fontColor="#dcd4d4" fontSize={25} label="⟳"/>
+        {isWeatherLoading &&
+          <ActivityIndicator size="large"/>}
+        {temp && description_weather && !isWeatherLoading &&
+          <View style={style.weatherTextContainer}>
+            <Image style={style.icon} source={{uri: weatherIcon}}/>
+            <AppText variant="SemiBold" style={style.weatherText}>{temp}℃ | 체감: {feels_like}℃ </AppText>
+            
+          </View>}
+      </View>
+      <AppText style={style.text} variant="Bold">오늘은 어떤 스타일이 좋을까요?</AppText>
       <FooterPanel getInfo={getInfo} input = {userInput} getInput={getInput} sendInfo = {sendInfo}/>
       <ResultModal isLoading={isLoading} gender={userInfo.gender} WhenLoadingDone={whenLoadingDone} data = {contents} isVisible={isModalVisible} onClose={onClose}/>
     </View>
@@ -193,16 +214,46 @@ const style = StyleSheet.create({
   container:{
     flex:1,
     backgroundColor:"#131313",
+    justifyContent:"center",
     alignItems:"center",
-    justifyContent:"center"
-    
+  },
+  icon:{
+    width:45,
+    height:30,
+    resizeMode: 'contain'
+  },
+  weatherContainer:{
+    height:100,
+    width:300,
+    backgroundColor:"#22212176",
+    alignItems:"center",
+    borderRadius:30,
+    borderWidth: 1,
+    borderColor: 'rgba(159, 155, 155, 0.18)',
+    gap:20,
+    position:"absolute",
+    padding:10,
+    top:100,
+  },
+  weatherTextContainer:{
+    flexDirection:"row",
   },
   text:{
     color:"#dcd4d4",
-    fontSize:24,
-    margin:50,
-    position:"absolute",
-    top:"30%",
+    fontSize:20,
+    letterSpacing: 1.5,
+    margin:20,
   },
+  weatherText:{
+    color:"#dcd4d4",
+    fontSize:18,
+    letterSpacing: 1.5
+  },
+  button:{
+    width:50,
+    height:35,
+    position:"absolute",
+    right:5,
+  }
  
 })

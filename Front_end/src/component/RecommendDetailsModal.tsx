@@ -24,8 +24,8 @@ export default function RecommendDetails({data, isVisible, onClose}:props) {
                         <Button fontColor="#fff" fontSize={15} label="X" onPress={onClose} />
                     </View>
                     <View style={style.describe}>
-                            <AppText variant="SemiBold" style={{fontSize:23,color:"#dcd4d4"}}>코디 상세</AppText>
-                            <AppText style={{fontSize:15,color:"#dcd4d4"}}>트렌드와 당신의 정보를 조합한 맞춤형 코디입니다</AppText>
+                            <AppText variant="SemiBold" style={{fontSize:23,color:"#dcd4d4"}}>코디 아이템 정보</AppText>
+                            <AppText style={{fontSize:15,color:"#dcd4d4"}}>아이템 칩을 누르면 비슷한 상품들을 볼수있어요</AppText>
                         </View>
                     <ScrollView contentContainerStyle={style.contents}>
                         <ItemsDetails data={data}/>

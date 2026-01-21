@@ -32,6 +32,5 @@ const style = StyleSheet.create({
     button:{
         alignItems:"center",
         justifyContent:"center",
-        padding:5,
     },
 })
