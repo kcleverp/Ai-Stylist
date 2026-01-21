@@ -10,6 +10,7 @@ export interface Setting{
 
 export interface Weather{
   description_weather: string,
+  weatherIcon: string,
   temp: number,
   feels_like: number
 }
@@ -55,20 +56,11 @@ export interface ForImage{
   outfits:Outfit[]
 }
 
-export interface emoji {
-  "weatherConditionEmoji" : string
-}
-
 /** 서버 전체 응답 구조 (통합 State용) */
 export interface Contents{
   "status": string,
   "timestamp": string,
   "data": {
-      "weather":{
-          "temp":number, 
-          "condition":string,
-          "emoji":emoji
-      },
       "recommendation":{
           "style":Style[], 
           "for_image":ForImage,

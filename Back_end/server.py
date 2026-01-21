@@ -36,6 +36,7 @@ def getWeather():
         weather_data = openWeatherResponse.json()
         weather_list = weather_data.get("weather",[{}])
         description_weather = weather_list[0].get("description","clear sky")
+        weatherIcon = f"https://openweathermap.org/img/wn/{weather_list[0].get('icon')}@2x.png"
         main = weather_data.get("main")
         temp = round(main.get("temp") - 273.15, 1)
         feels_like = round(main.get("feels_like") - 273.15,1)
@@ -45,6 +46,7 @@ def getWeather():
     
     weather = {
         "description_weather": description_weather,
+        "weatherIcon": weatherIcon,
         "temp": temp,
         "feels_like": feels_like
     }
@@ -79,10 +81,10 @@ def createAnswer():
         "height":  userHeight if userHeight is not None and (userHeight < 200 and userHeight >= 100 ) else  170 ,
         "weight":  userWeight if userWeight is not None and (userWeight < 200 and userWeight >= 25 ) else 60
         }
-    weather = data.get("userWeather")
-    description_weather = weather.get("description_weather")
-    temp = weather.get("temp")
-    feels_like = weather.get("feels_like")
+    weatherData = data.get("userWeather")
+    description_weather = weatherData.get("description_weather")
+    temp = weatherData.get("temp")
+    feels_like = weatherData.get("feels_like")
     kst = pytz.timezone('Asia/Seoul')
     now = datetime.now(kst)
     timestamp = now.strftime('%Y-%m-%dT%H:%M:%S%z')
@@ -97,7 +99,7 @@ def createAnswer():
             trendData = f.read()
 
     final_answer_prompt = f"{SYSTEM_PROMPT}\n{trendData}"
-    print(final_answer_prompt)
+
     try: 
         ai_response = client.models.generate_content(
             model = "gemini-3-flash-preview",
@@ -132,11 +134,6 @@ def createAnswer():
         "status": "failed",
         "timestamp":timestamp,
         "data": {
-            "weather":{
-                "temp":None, 
-                "condition":None,
-                "emoji":None
-                },
             "recommendation":{
                 "style": None,
                 "for_image": None,
@@ -152,16 +149,10 @@ def createAnswer():
     
     #프론트 엔드로 데이터 파싱 로직
     style_recommendation = answer.get("style_recommendation")
-    emoji = answer.get("weatherEmoji")
     result = {
         "status": "success",
         "timestamp":timestamp,
         "data": {
-            "weather":{
-                "temp":temp, 
-                "condition":description_weather,
-                "emoji":emoji
-            },
             "recommendation":{
                 "style": style_recommendation,
                 "for_image":imageData,
