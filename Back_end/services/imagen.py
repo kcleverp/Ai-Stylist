@@ -37,26 +37,31 @@ def imagen(imageData, expected, gender, client):
             describe = "[Outfit] "
             label = i.get("style_label","")
             cap = i.get("cap", "")
-            outerwear = i.get("outerwear", "")
             top = i.get("top", "")
+            outerwear = i.get("outerwear", "")
+            neck_acc = i.get("neck_acc", "")
             bottom = i.get("bottom", "")
             shoes = i.get("shoes", "")
-            acc = i.get("acc", "")
+            hand_acc = i.get("hand_acc", "")
             if expected >= 2:
                 describe += f"This outfit is {label}, "
-            describe += "Dressed in "
+            describe += "Wearing a "
             if cap:
-                describe += f"{cap}-"
+                describe += f"{cap}, "
             if outerwear:
-                describe += f"{outerwear}-"
-            if acc:
-                describe += f"{acc}-"
-            describe += f"{top}-"
-            describe += f"{bottom}-{shoes}."
+                describe += f"{outerwear} layered over a "    
+            describe += f"{top}, "
+            describe += f"{bottom}, "
+            if neck_acc:
+                describe += f"a {neck_acc} worn around the neck, "
+            if hand_acc:
+                describe += f"and a {hand_acc} "
+            describe += f"Finished with {shoes}."
             image_prompt += f"{describe}\n"
             describe = ""
             
     final_image_prompt = f"{image_requirements}\n{image_prompt}"
+    print(final_image_prompt)
     try: 
         imagen_response = client.models.generate_images(
             model = "imagen-4.0-fast-generate-001",
