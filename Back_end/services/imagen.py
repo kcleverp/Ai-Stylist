@@ -1,11 +1,14 @@
-from image_layouts import SINGLE_STYLE, DOUBLE_STYLE, MULTI_STYLE
+from dotenv import load_dotenv
 from google.genai import types
 import uuid
 import os
 
-
-
+load_dotenv("layouts.env")
+SINGLE_STYLE = os.getenv("SINGLE_STYLE")
+DOUBLE_STYLE = os.getenv("DOUBLE_STYLE")
+MULTI_STYLE = os.getenv("MULTI_STYLE")
 def imagen(imageData, expected, gender, client):
+
     if os.path.exists("image_requirements.txt"):
         with open("image_requirements.txt","r",encoding="utf-8") as f:
             image_requirements = f.read()
