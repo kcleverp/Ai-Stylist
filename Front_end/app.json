@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "MVP-app",
-    "slug": "MVP-app",
+    "name": "오늘코디",
+    "slug": "today-coordi",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./src/assets/images/icon.png",
-    "scheme": "mvpapp",
+    "scheme": "today-coordi",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
@@ -16,10 +16,8 @@
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
-        "foregroundImage": "./src/assets/images/android-icon-foreground.png",
-        "backgroundImage": "./src/assets/images/android-icon-background.png",
-        "monochromeImage": "./src/assets/images/android-icon-monochrome.png"
+        "backgroundColor": "#131313", 
+        "foregroundImage": "./src/assets/images/foreground-icon.png"
       },
       "permissions": [
         "ACCESS_COARSE_LOCATION",
@@ -27,8 +25,7 @@
         "FOREGROUND_SERVICE"
       ],
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false,
-      "softwareKeyboardLayoutMode": "pan"
+      "package": "com.kcleverp.todaycoordi"
     },
     "web": {
       "output": "static",
@@ -39,21 +36,19 @@
       [
         "expo-splash-screen",
         {
-          "image": "./src/assets/images/splash-icon.png",
+          "image": "./src/assets/images/favicon.png",
           "imageWidth": 200,
           "resizeMode": "contain",
-          "backgroundColor": "#ffffff",
-          "dark": {
-            "backgroundColor": "#000000"
-          }
+          "backgroundColor": "#ffffff"
         }
       ],
       "expo-font",
       "expo-web-browser"
     ],
-    "experiments": {
-      "typedRoutes": true,
-      "reactCompiler": true
+    "extra": {
+      "eas": {
+        "projectId": "fedcc573-a6cb-477f-885c-3fcf5a0d039f"
+      }
     }
   }
 }
