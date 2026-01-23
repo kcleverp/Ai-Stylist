@@ -33,6 +33,7 @@ export default function Index() {
 
   const [isWeatherFail, setIsWeatherFail] = useState<boolean>(false)
   const [isWeatherLoading, setIsWeatherLoading] = useState<boolean>(false)
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
   //함수 영역
 
   const getWeather = async () => {
@@ -190,7 +191,7 @@ export default function Index() {
   const {temp = null, weatherIcon = undefined, feels_like = null} = userWeather || {}
   return (
     <View style={style.container}>
-      <FirstLaunchModal/>
+      <FirstLaunchModal isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen}/>
       <WeatherErrorModal visible={isWeatherFail} onClose={whenWheatherErrorModalClose} retry={retry}/>
       <View style={style.weatherContainer}>
         <AppText style={{color:"#dcd4d4", fontSize:16, letterSpacing: 1.5}}>현재 날씨정보</AppText>
@@ -205,6 +206,7 @@ export default function Index() {
       </View>
       <AppText style={style.text} variant="Bold">오늘은 어떤 스타일이 좋을까요?</AppText>
       <FooterPanel getInfo={getInfo} input = {userInput} getInput={getInput} sendInfo = {sendInfo}/>
+      <Button styles ={style.buttons}fontColor="#dcd4d4" label="개인정보 이용 안내" onPress={() => setIsModalOpen(true)}/>
       <ResultModal isLoading={isLoading} gender={userInfo.gender} WhenLoadingDone={whenLoadingDone} data = {contents} isVisible={isModalVisible} onClose={onClose}/>
     </View>
   );
@@ -216,6 +218,17 @@ const style = StyleSheet.create({
     backgroundColor:"#131313",
     justifyContent:"center",
     alignItems:"center",
+  },
+  buttons:{
+    backgroundColor:"#333232c1",
+    borderWidth:1,
+    borderColor: '#434242ac',      
+    borderTopColor: '#555',
+    borderRadius:10,
+    width: 180,
+    height: 50,
+    position:"absolute",
+    bottom:120,
   },
   icon:{
     width:45,

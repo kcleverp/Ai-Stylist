@@ -4,7 +4,11 @@ import {Modal, View, StyleSheet, Linking} from "react-native"
 import AppText from './AppText';
 import Button from "./Button";
 
-export default function FirstLaunchModal(){
+interface props{
+    isModalOpen:boolean
+    setIsModalOpen:(para:boolean) => void
+}
+export default function FirstLaunchModal({isModalOpen, setIsModalOpen}:props){
     const onPress = async () => {
         const url = "https://kcleverp.github.io/Ai-Stylist-App-privacy/"
         const supported = await Linking.canOpenURL(url);
@@ -15,7 +19,6 @@ export default function FirstLaunchModal(){
         }
     }
 
-    const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
     const todo = (para:boolean) => {
         setIsModalOpen(para)
     }
