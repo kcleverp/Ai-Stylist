@@ -8,6 +8,10 @@
     "scheme": "today-coordi",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
+    "experiments": {
+      "typedRoutes": true,
+      "reactCompiler": true
+    },
     "ios": {
       "supportsTablet": true,
       "infoPlist": {
@@ -16,7 +20,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#131313", 
+        "backgroundColor": "#131313",
         "foregroundImage": "./src/assets/images/foreground-icon.png"
       },
       "permissions": [
@@ -25,6 +29,8 @@
         "FOREGROUND_SERVICE"
       ],
       "edgeToEdgeEnabled": true,
+      "predictiveBackGestureEnabled": false,
+      "softwareKeyboardLayoutMode": "pan",
       "package": "com.kcleverp.todaycoordi"
     },
     "web": {
@@ -46,6 +52,7 @@
       "expo-web-browser"
     ],
     "extra": {
+      "router": {},
       "eas": {
         "projectId": "fedcc573-a6cb-477f-885c-3fcf5a0d039f"
       }
