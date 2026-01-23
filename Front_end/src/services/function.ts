@@ -5,7 +5,6 @@ type props = (para:boolean) => void
 export const checkFirstLaunch = async(todo:props) => {
     try{
         const hasLaunched = await AsyncStorage.getItem("HAS_LAUNCHED");
-        console.log(hasLaunched)
 
         if(hasLaunched === null){
             await AsyncStorage.setItem("HAS_LAUNCHED", "true");

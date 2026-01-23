@@ -64,7 +64,6 @@ def imagen(imageData, expected, gender, client):
             describe = ""
             
     final_image_prompt = f"{image_requirements}\n{image_prompt}"
-    print(final_image_prompt)
     try: 
         imagen_response = client.models.generate_images(
             model = "imagen-4.0-fast-generate-001",

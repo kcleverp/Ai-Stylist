@@ -43,8 +43,6 @@ export default function Index() {
         const weather = await getCurrentWeather()
         setWeather(weather)
         setIsWeatherLoading(false)
-        console.log("날씨 정보를 가져왔어요")
-        console.log(weather)
       }
     catch(error){
       setIsWeatherFail(true)
@@ -87,7 +85,6 @@ export default function Index() {
 
   //앱 시작시 날씨정보 로딩
   useEffect(() => {
-    console.log("날씨정보를 받아올게요")
     const baseWeather = {
       description_weather: "clearSky",
       weatherIcon:"https://openweathermap.org/img/wn/01d@2x.png",
@@ -185,7 +182,6 @@ export default function Index() {
   }
 
   const retry = () => {
-    console.log("날씨 정보를 다시 가져올게요")
     getWeather()
   }
   const {temp = null, weatherIcon = undefined, feels_like = null} = userWeather || {}

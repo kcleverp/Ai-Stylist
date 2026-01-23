@@ -50,7 +50,7 @@ def getWeather():
         "temp": temp,
         "feels_like": feels_like
     }
-    print(weather)
+    
     return jsonify(weather)
 
 #코디 생성 로직
@@ -189,7 +189,6 @@ def cleanup_image():
 
         try:
             os.remove(safe_path)
-            print("삭제완료")
             result = {
                 "status":"success",
                 "message":f"imgFile:{safe_path} is deleted"
