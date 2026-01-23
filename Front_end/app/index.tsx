@@ -10,6 +10,7 @@ import {useFonts} from "expo-font"
 import WeatherErrorModal from "@/src/component/WeatherErrorModal";
 import * as Location from "expo-location"
 import Button from "@/src/component/Button";
+import FirstLaunchModal from "@/src/component/FirstLaunchModal";
 export default function Index() {
 
   //전역 폰트 설정
@@ -186,22 +187,21 @@ export default function Index() {
     console.log("날씨 정보를 다시 가져올게요")
     getWeather()
   }
-  const {temp = null, description_weather = null, weatherIcon = undefined, feels_like = null} = userWeather || {}
-  console.log(weatherIcon)
+  const {temp = null, weatherIcon = undefined, feels_like = null} = userWeather || {}
   return (
     <View style={style.container}>
+      <FirstLaunchModal/>
       <WeatherErrorModal visible={isWeatherFail} onClose={whenWheatherErrorModalClose} retry={retry}/>
       <View style={style.weatherContainer}>
         <AppText style={{color:"#dcd4d4", fontSize:16, letterSpacing: 1.5}}>현재 날씨정보</AppText>
         <Button onPress={retry}styles={style.button} variant="Bold" fontColor="#dcd4d4" fontSize={25} label="⟳"/>
-        {isWeatherLoading &&
-          <ActivityIndicator size="large"/>}
-        {temp && description_weather && !isWeatherLoading &&
+        {isWeatherLoading && (
+          <ActivityIndicator size="large"/>)}
+        {!isWeatherLoading && (
           <View style={style.weatherTextContainer}>
             <Image style={style.icon} source={{uri: weatherIcon}}/>
-            <AppText variant="SemiBold" style={style.weatherText}>{temp}℃ | 체감: {feels_like}℃ </AppText>
-            
-          </View>}
+            <AppText variant="SemiBold" style={style.weatherText}>{temp}℃ | 체감: {feels_like}℃</AppText>
+          </View>)}
       </View>
       <AppText style={style.text} variant="Bold">오늘은 어떤 스타일이 좋을까요?</AppText>
       <FooterPanel getInfo={getInfo} input = {userInput} getInput={getInput} sendInfo = {sendInfo}/>
