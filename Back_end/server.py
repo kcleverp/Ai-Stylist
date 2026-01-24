@@ -67,9 +67,7 @@ def createAnswer():
         clean_text = "일상생활 룩"
     elif any(keyword in clean_text.lower() for keyword in forbidden_keywords): #금지어가 들어가있는지 확인
         return jsonify({"error":"부적절한 입력", "Code": 500}), 500
-    else:
-        userInput = clean_text
-
+    userInput = clean_text
     userInfo = data.get("userInfo")
     userStyle = userInfo.get('userStyle')
     userGender = userInfo.get('gender')
