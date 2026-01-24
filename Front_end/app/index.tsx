@@ -155,10 +155,21 @@ export default function Index() {
           setContents(data)
         }catch(error){
           console.error("서버통신 불가",error)
-          alert("서버 통신중 오류가 발생했습니다.")
-          setIsLoading(false)
-          setIsModalVisible(false)
-          return null
+          Alert.alert(
+            "연결 오류",
+            "서버 응답이 지연되고 있습니다.\n잠시 후 다시 시도해 주세요.",
+          [ {text:"확인", style:"cancel", 
+            onPress:() => {
+              setIsLoading(false)
+              setIsModalVisible(false)}},
+            {text:"다시시도", 
+              onPress:() => {
+                setIsLoading(false)
+                setIsModalVisible(false)
+                sendInfo()
+              }}
+          ])
+          
       }
     }
     await attemptFetch(2)
@@ -166,7 +177,8 @@ export default function Index() {
 
   const whenLoadingDone = () => {
     setIsLoading(false)
-    requestDelete(contents?.data.recommendation.imgUrl)
+    if(contents?.data?.recommendation?.imgUrl){
+      requestDelete(contents?.data.recommendation.imgUrl)}
   }
 
   const whenWheatherErrorModalClose = () => {
@@ -177,6 +189,7 @@ export default function Index() {
       feels_like: 8
     }
     setWeather(baseWeather)
+    setIsWeatherLoading(false)
     setIsWeatherFail(false)
     alert("날씨 정보를 가져올 수 없어서 기본값으로 설정했어요.\n\n• 날씨: 맑음\n• 기온: 10°C\n• 체감: 8°C");
   }
