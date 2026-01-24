@@ -26,7 +26,7 @@ export default function FirstLaunchModal({isModalOpen, setIsModalOpen}:props){
         checkFirstLaunch(todo)
     }, [])
     return(
-        <Modal visible={isModalOpen} animationType="slide" transparent={true}>
+        <Modal visible={isModalOpen} animationType="slide" transparent={true} onRequestClose={() => setIsModalOpen(false)}>
             <View style={style.modalContainer}>
                 <View style={style.contents}>
                     <AppText variant="Bold" style={style.Htext}>개인정보 이용 안내</AppText>
@@ -36,7 +36,6 @@ export default function FirstLaunchModal({isModalOpen, setIsModalOpen}:props){
                     </AppText>
                     <Button label="안내 자세히 보기" styles={style.detailBtn} fontColor="#fff" onPress={() => onPress()}/>
                     <Button styles={style.button} fontColor="#fff" onPress={() => setIsModalOpen(false)} label="확인"/>
-                    
                 </View>
             </View>
         </Modal>

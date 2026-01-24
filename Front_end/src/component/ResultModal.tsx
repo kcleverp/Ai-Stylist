@@ -50,6 +50,8 @@ export default function ResultModal({data, gender, isVisible, onClose, isLoading
                     <View style={style.analysisBox}>
                     {analysis !== null ?( 
                         <AppText variant="SemiBold" style={{color:"#dcd4d4", fontSize:16, }}>{analysis}</AppText>): null} 
+                    {analysis === null? (
+                        <AppText variant="SemiBold" style={{color:"#dcd4d4", fontSize:16, }}>사용자님의 코디를 생성중이에요</AppText>): null}
                     </View>
                     <View style={style.detailsBtn}>
                         <Button variant="Bold"fontColor="#dcd4d4" fontSize={18} label="코디 아이템 보기" styles={{flex:1}} onPress={() => setIsDetailsVisible(true)} />
@@ -99,7 +101,7 @@ const style = StyleSheet.create({
     text:{
         color:"#dcd4d4",
         fontSize:18,
-        margin:5,
+        margin:15,
     },
 
     itemBox:{
@@ -129,7 +131,7 @@ const style = StyleSheet.create({
         height:50,
         borderRadius:10,
         position:"absolute",
-        top:8,
+        top:20,
         left:5,
     }
 })

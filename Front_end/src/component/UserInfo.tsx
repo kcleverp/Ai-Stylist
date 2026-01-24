@@ -33,8 +33,8 @@ export default function UserInfo({getInfo, isSettingOpen, setIsSettingOpen}:prop
     const [weight,setWeight] = useState<number>(0)
 
     const saveInfo = () => {
-        if(!height || !weight){
-            alert("신장과 체중을 모두 입력해주세요")
+        if(!height || !weight || !gender || !userStyle){
+            alert("값을 모두 입력해주세요")
             return null
         }
 

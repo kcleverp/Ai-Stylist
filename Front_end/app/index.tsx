@@ -46,6 +46,7 @@ export default function Index() {
       }
     catch(error){
       setIsWeatherFail(true)
+      setIsWeatherLoading(false)
       console.warn("날씨정보를 가져오지 못함",error)
     }
   }
@@ -206,7 +207,10 @@ export default function Index() {
         <AppText style={{color:"#dcd4d4", fontSize:16, letterSpacing: 1.5}}>현재 날씨정보</AppText>
         <Button onPress={retry}styles={style.button} variant="Bold" fontColor="#dcd4d4" fontSize={25} label="⟳"/>
         {isWeatherLoading && (
-          <ActivityIndicator size="large"/>)}
+          <>
+          <ActivityIndicator size="large"/>
+          <AppText style={{color:"#dcd4d4", fontSize:14, letterSpacing: 1.5}}>서버 연결 준비 중입니다.{"\n"}최초 실행 시 최대 1분 정도 소요될 수 있습니다.</AppText>
+          </>)}
         {!isWeatherLoading && (
           <View style={style.weatherTextContainer}>
             <Image style={style.icon} source={{uri: weatherIcon}}/>
@@ -214,7 +218,7 @@ export default function Index() {
           </View>)}
       </View>
       <AppText style={style.text} variant="Bold">오늘은 어떤 스타일이 좋을까요?</AppText>
-      <FooterPanel getInfo={getInfo} input = {userInput} getInput={getInput} sendInfo = {sendInfo}/>
+      <FooterPanel getInfo={getInfo} input={userInput} isWeatherLoading={isWeatherLoading} getInput={getInput} sendInfo = {sendInfo}/>
       <Button styles ={style.buttons}fontColor="#dcd4d4" label="개인정보 이용 안내" onPress={() => setIsModalOpen(true)}/>
       <ResultModal isLoading={isLoading} gender={userInfo.gender} WhenLoadingDone={whenLoadingDone} data = {contents} isVisible={isModalVisible} onClose={onClose}/>
     </View>
@@ -228,16 +232,22 @@ const style = StyleSheet.create({
     justifyContent:"center",
     alignItems:"center",
   },
+  noInputText:{
+    color:"#dcd4d4",
+    fontSize:12,
+    letterSpacing: 1.5,
+    
+  },
   buttons:{
     backgroundColor:"#333232c1",
     borderWidth:1,
     borderColor: '#434242ac',      
     borderTopColor: '#555',
     borderRadius:10,
-    width: 180,
+    width: 150,
     height: 50,
     position:"absolute",
-    bottom:120,
+    bottom:100,
   },
   icon:{
     width:45,
@@ -255,7 +265,7 @@ const style = StyleSheet.create({
     gap:20,
     position:"absolute",
     padding:10,
-    top:100,
+    top:80,
   },
   weatherTextContainer:{
     flexDirection:"row",
