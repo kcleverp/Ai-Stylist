@@ -3,7 +3,7 @@ import ResultModal from "@/src/component/ResultModal";
 import AppText from "@/src/component/AppText";
 import { Setting, Weather, Contents } from "@/src/types/schema";
 import { useEffect, useState } from "react";
-import { Alert, StyleSheet, View, ActivityIndicator, Image } from "react-native";
+import { Alert, StyleSheet, View, ActivityIndicator, Image} from "react-native";
 import {requestStyleRecommendation, requestDelete} from "@/src/services/api"
 import { getCurrentWeather } from "@/src/services/weather"; 
 import {useFonts} from "expo-font"
@@ -11,6 +11,7 @@ import WeatherErrorModal from "@/src/component/WeatherErrorModal";
 import * as Location from "expo-location"
 import Button from "@/src/component/Button";
 import FirstLaunchModal from "@/src/component/FirstLaunchModal";
+import NetInfo from "@react-native-community/netinfo"
 export default function Index() {
 
   //전역 폰트 설정
@@ -35,6 +36,7 @@ export default function Index() {
   const [isWeatherLoading, setIsWeatherLoading] = useState<boolean>(false)
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
   //함수 영역
+  
 
   const getWeather = async () => {
     try{
@@ -50,6 +52,7 @@ export default function Index() {
       console.warn("날씨정보를 가져오지 못함",error)
     }
   }
+
 
   const appinit = async() => {
     const { status: existingStatus } = await Location.getForegroundPermissionsAsync();
@@ -84,6 +87,7 @@ export default function Index() {
     }
   }
 
+  
   //앱 시작시 날씨정보 로딩
   useEffect(() => {
     const baseWeather = {
@@ -92,8 +96,16 @@ export default function Index() {
       temp: 10,
       feels_like: 8
     }
+    const unsubscribe = NetInfo.addEventListener(state => {
+      if (!state.isConnected || !state.isInternetReachable){
+        Alert.alert(
+          "네트워크 연결 끊김",
+          "인터넷 연결이 없어요 네트워크 설정을 확인해주세요",
+          [{text:"확인", style:"cancel"}]
+        );
+      }
+    })
     setWeather(baseWeather)
-    appinit()
     const cleanInfo = {
         "userStyle": "casual", 
         "gender": "male",
@@ -101,6 +113,9 @@ export default function Index() {
         "weight": 60 
       }
     setUserInfo(cleanInfo)
+    appinit()
+    return () => unsubscribe()
+
   },[])
 
   if (!fontsLoaded) {
