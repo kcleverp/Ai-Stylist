@@ -2,7 +2,7 @@
   "expo": {
     "name": "오늘코디",
     "slug": "today-coordi",
-    "version": "1.0.0",
+    "version": "2.0.0",
     "orientation": "portrait",
     "icon": "./src/assets/images/icon.png",
     "scheme": "today-coordi",

@@ -220,7 +220,8 @@ export default function Index() {
       <WeatherErrorModal visible={isWeatherFail} onClose={whenWheatherErrorModalClose} retry={retry}/>
       <View style={style.weatherContainer}>
         <AppText style={{color:"#dcd4d4", fontSize:16, letterSpacing: 1.5}}>현재 날씨정보</AppText>
-        <Button onPress={retry}styles={style.button} variant="Bold" fontColor="#dcd4d4" fontSize={25} label="⟳"/>
+        {!isWeatherLoading &&(
+          <Button onPress={retry}styles={style.button} variant="Bold" fontColor="#dcd4d4" fontSize={25} label="⟳"/>)}
         {isWeatherLoading && (
           <>
           <ActivityIndicator size="large"/>
