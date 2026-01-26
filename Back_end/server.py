@@ -11,6 +11,7 @@ import os
 import requests
 import pytz
 import re
+import time
 server = Flask(__name__)
 CORS(server)
 load_dotenv("important.env")
@@ -23,6 +24,7 @@ else:
     SYSTEM_PROMPT = "지정된 프롬프트 없음 [오류]라고 출력"
 
 OPEN_WEATHER_MAP_API_KEY = os.getenv("OPEN_WEATHER_MAP_API_KEY")
+start_time = time.time()
 
 #날씨 정보 수집 로직
 @server.route("/weather", methods=["POST"])
@@ -199,6 +201,17 @@ def cleanup_image():
             }
             return jsonify(result), 500
     return jsonify({"status": "error", "message": "File not found"}), 404
+
+@server.route("/health", methods=["GET"])
+def check_server():
+    uptime = int(time.time() - start_time)
+    uptime_str = time.strftime("%H,%M,%S", time.gmtime(uptime))
+    result = {
+        "status":"success",
+        "time_stamp":time.time(),
+        "uptime":uptime_str
+    }
+    return result
    
 if __name__ == "__main__":
     # Render가 주는 PORT 환경변수를 사용하고, 없으면 10000을 사용합니다.
