@@ -17,11 +17,21 @@ CORS(server)
 load_dotenv("important.env")
 client = genai.Client()
 style_label = ["A"]
-if os.path.exists("prompt.txt"):
-    with open("prompt.txt","r",encoding="utf-8") as f:
-        SYSTEM_PROMPT = f.read()
+is_server = os.environ.get('RENDER') == 'true'
+if is_server:
+    server_propmts_path = "prompt.txt"
+    if os.path.exists(server_propmts_path):
+        with open(server_propmts_path,"r",encoding="utf-8") as f:
+            SYSTEM_PROMPT = f.read()
+    else:
+        SYSTEM_PROMPT = "지정된 프롬프트 없음 [오류]라고 출력"
 else:
-    SYSTEM_PROMPT = "지정된 프롬프트 없음 [오류]라고 출력"
+    local_prompt_path ="prompts/prompt.txt" 
+    if os.path.exists(local_prompt_path):
+        with open(local_prompt_path,"r",encoding="utf-8") as f:
+            SYSTEM_PROMPT = f.read()
+    else:
+        SYSTEM_PROMPT = "지정된 프롬프트 없음 [오류]라고 출력"
 
 OPEN_WEATHER_MAP_API_KEY = os.getenv("OPEN_WEATHER_MAP_API_KEY")
 start_time = time.time()
@@ -92,14 +102,25 @@ def createAnswer():
     height = cleanInfo.get('height')
     weight = cleanInfo.get('weight')
     style = cleanInfo.get('style')
-    trendJson = f"data/trends/{gender}.json"
     trendData = ""
-    if (os.path.exists(trendJson)):
-        with open(trendJson, "r", encoding="utf-8") as f:
-            trendData = f.read()
+    if is_server:
+        trendJson = f"{gender}.json"
+        if (os.path.exists(trendJson)):
+            with open(trendJson, "r", encoding="utf-8") as f:
+                trendData = f.read()
+        else:
+            trendData=""
+            print(f"경고: {trendJson} 파일이 서버에 없습니다.")
+    else:
+        trendJson = f"data/trends/{gender}.json"
+        if (os.path.exists(trendJson)):
+            with open(trendJson, "r", encoding="utf-8") as f:
+                trendData = f.read()
+        else:
+            trendData=""
+            print(f"경고: {trendJson} 파일이 서버에 없습니다.")
 
     final_answer_prompt = f"{SYSTEM_PROMPT}\n{trendData}"
-
     try: 
         ai_response = client.models.generate_content(
             model = "gemini-3-flash-preview",
