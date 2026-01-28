@@ -27,12 +27,10 @@ export type ImgUrl = string | ImageSourcePropType
 
 
 export interface Recommendation {
-    cap:string
     top:string
     outerwear:string
     neck_acc:string
     bottom:string
-    hand_acc:string
     shoes:string
 }
 
@@ -44,12 +42,10 @@ export interface Style{
 }
 export interface Outfit{
   style_label: string,
-  cap: string,
   top: string,
   outerwear: string,
   neck_acc: string
   bottom: string,
-  hand_acc: string
   shoes: string,
 
 }

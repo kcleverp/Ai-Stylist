@@ -9,8 +9,8 @@ DOUBLE_STYLE = os.getenv("DOUBLE_STYLE")
 MULTI_STYLE = os.getenv("MULTI_STYLE")
 def imagen(imageData, expected, gender, client):
 
-    if os.path.exists("image_requirements.txt"):
-        with open("image_requirements.txt","r",encoding="utf-8") as f:
+    if os.path.exists("prompts/image_requirements.txt"):
+        with open("prompts/image_requirements.txt","r",encoding="utf-8") as f:
             image_requirements = f.read()
     else:
         image_requirements = "지정된 이미지 프롬프트 없음 [오류]라고 출력"
@@ -39,26 +39,20 @@ def imagen(imageData, expected, gender, client):
         for i in outfits:
             describe = "[Outfit] "
             label = i.get("style_label","")
-            cap = i.get("cap", "")
-            top = i.get("top", "")
             outerwear = i.get("outerwear", "")
+            top = i.get("top", "")
             neck_acc = i.get("neck_acc", "")
             bottom = i.get("bottom", "")
             shoes = i.get("shoes", "")
-            hand_acc = i.get("hand_acc", "")
             if expected >= 2:
                 describe += f"This outfit is {label}, "
             describe += "Wearing a "
-            if cap:
-                describe += f"{cap}, "
             if outerwear:
-                describe += f"{outerwear} layered over a "    
+                describe += f"{outerwear} layered over a "   
             describe += f"{top}, "
             describe += f"{bottom}, "
             if neck_acc:
-                describe += f"a {neck_acc} worn around the neck, "
-            if hand_acc:
-                describe += f"and a {hand_acc} "
+                describe += f" {neck_acc}, "
             describe += f"Finished with {shoes}."
             image_prompt += f"{describe}\n"
             describe = ""

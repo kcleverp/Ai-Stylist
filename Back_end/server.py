@@ -24,14 +24,15 @@ if is_server:
         with open(server_propmts_path,"r",encoding="utf-8") as f:
             SYSTEM_PROMPT = f.read()
     else:
-        SYSTEM_PROMPT = "지정된 프롬프트 없음 [오류]라고 출력"
+        SYSTEM_PROMPT = ""
 else:
     local_prompt_path ="prompts/prompt.txt" 
     if os.path.exists(local_prompt_path):
         with open(local_prompt_path,"r",encoding="utf-8") as f:
             SYSTEM_PROMPT = f.read()
     else:
-        SYSTEM_PROMPT = "지정된 프롬프트 없음 [오류]라고 출력"
+        SYSTEM_PROMPT = ""
+
 
 OPEN_WEATHER_MAP_API_KEY = os.getenv("OPEN_WEATHER_MAP_API_KEY")
 start_time = time.time()
