@@ -1,17 +1,18 @@
-import { useState } from "react";
 import { ScrollView,View,Image } from "react-native";
 import AppText from "../component/AppText";
 import { imgList } from "../types/schema";
 import Button from "../component/Button";
 import { pickingImg } from "@/src/services/function"
 import { styles } from "../styles/AppStyle";
+import { sendToAnalyze } from "../services/api";
 export default function ClosetView({imgList,setImgList}:imgList){
     const removeItem = (id:string) => {
         setImgList(imgList.filter(item => item.id !== id))
     }
-    
     return(
         <View style={styles.closetArea}>
+            <AppText style={styles.text}>옷장에 등록할 아이템의 이미지를 올려주세요</AppText>
+            <AppText style={styles.text}>인공지능이 분석해 아이템을 뽑아줍니다</AppText>
             <ScrollView  contentContainerStyle={styles.closetContents}>
                 <Button fontColor="#dcd4d4" styles={styles.imgInputButton} fontSize={40} label="＋" onPress={() => pickingImg({imgList,setImgList})}/>
                 {imgList && imgList.map((item) => (
@@ -21,7 +22,7 @@ export default function ClosetView({imgList,setImgList}:imgList){
                     </View>
                 ))}
             </ScrollView>
-            <Button label="등록" fontColor="#dcd4d4" styles={styles.closetSaveBtn} onPress={() => alert("등록")}/>
+            <Button label="이 아이템으로 옷장만들기" fontColor="#dcd4d4" styles={styles.closetSaveBtn} onPress={() => sendToAnalyze(imgList)}/>
         </View>
     )
 }

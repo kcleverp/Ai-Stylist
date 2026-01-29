@@ -8,8 +8,9 @@ export const styles = StyleSheet.create({
     },
     text:{
         color:"#dcd4d4",
-        fontSize:16,
+        fontSize:14,
         letterSpacing: 1.5,
+        alignSelf:"center",
     },
     imgInputButton:{
         backgroundColor:"#eeebebcf",
