@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 from google import genai
 from google.genai import types
 from services.imagen import imagen
+from services.analyze import analyze
 from PIL import Image
 from datetime import datetime
 import json
@@ -234,7 +235,16 @@ def check_server():
         "uptime":uptime_str
     }
     return result
-   
+
+
+@server.route("/analyze", methods=["POST"])
+def analyzeImage():
+    data = request.json
+    result = analyze(data, client)
+    print(result)
+    pa = {"status":"success"}
+    return pa
+
 if __name__ == "__main__":
     # Render가 주는 PORT 환경변수를 사용하고, 없으면 10000을 사용합니다.
     port = int(os.environ.get("PORT", 10000))
