@@ -12,6 +12,7 @@ import * as Location from "expo-location"
 import Button from "@/src/component/Button";
 import FirstLaunchModal from "@/src/component/FirstLaunchModal";
 import NetInfo from "@react-native-community/netinfo"
+import {useRouter} from "expo-router"
 export default function Index() {
 
   //전역 폰트 설정
@@ -21,7 +22,8 @@ export default function Index() {
     "Pretendard-Medium": require("@/src/assets/fonts/Pretendard-Medium.otf"),
     "Pretendard-Regular": require("@/src/assets/fonts/Pretendard-Regular.otf"),
   })
-  
+  //라우터 설정
+  const router = useRouter();
   // state 영역
   const [userWeather, setWeather] = useState<Weather| null>(null)
   const [userInfo,setUserInfo] = useState<Setting>({userStyle:"", gender:"", height:0, weight:0})
@@ -235,8 +237,10 @@ export default function Index() {
       </View>
       <AppText style={style.text} variant="Bold">오늘은 어떤 스타일이 좋을까요?</AppText>
       <FooterPanel getInfo={getInfo} input={userInput} isWeatherLoading={isWeatherLoading} getInput={getInput} sendInfo = {sendInfo}/>
+      <Button label="옷장" styles ={style.closet}fontColor="#dcd4d4" onPress={() => router.push("/myCloset")}/>
       <Button styles ={style.buttons}fontColor="#dcd4d4" label="개인정보 이용 안내" onPress={() => setIsModalOpen(true)}/>
       <ResultModal isLoading={isLoading} gender={userInfo.gender} WhenLoadingDone={whenLoadingDone} data = {contents} isVisible={isModalVisible} onClose={onClose}/>
+      
     </View>
   );
 }
@@ -248,11 +252,19 @@ const style = StyleSheet.create({
     justifyContent:"center",
     alignItems:"center",
   },
+  closet:{
+    backgroundColor:"#333232c1",
+    borderWidth:1,
+    borderColor: '#434242ac',      
+    borderTopColor: '#555',
+    borderRadius:10,
+    width: 150,
+    height: 50,
+  },
   noInputText:{
     color:"#dcd4d4",
     fontSize:12,
     letterSpacing: 1.5,
-    
   },
   buttons:{
     backgroundColor:"#333232c1",

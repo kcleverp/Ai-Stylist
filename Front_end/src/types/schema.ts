@@ -67,3 +67,18 @@ export interface Contents{
       },  
   },
 }
+
+//나만의 옷장
+
+export interface ClosetItem{
+  id:string,
+  img:string
+  assetId: string| null | undefined
+}
+export interface imgList{
+    imgList:ClosetItem[]
+    setImgList:(item:ClosetItem[]) => void
+}
+export interface ClosetData{
+
+}
