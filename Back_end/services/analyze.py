@@ -18,8 +18,8 @@ else:
             ANALYZE_PROMPT = f.read()
     else:
         ANALYZE_PROMPT = ""
+
 def analyze(data, client):
-    print(data)
     imagesUrl = data.get("images",[])
     image_parts = []
     with httpx.Client() as http_client:
@@ -58,4 +58,25 @@ def analyze(data, client):
     except Exception as e:
         print(f"이미지분석중 오류발생: {e}")
         return None
-        
+
+def sendToDB(json_data, data, supabase_client):
+    img_url = data.get("images")
+    device_id = data.get("deviceId")
+    closet_id = data.get("closetId")
+    saved_item = []
+    for item in json_data["closet_items"]:
+        insert_data = {
+            "closet_id": closet_id,
+            "device_id": device_id,
+            "item_name": item["item_name"],
+            "category": item["category"],
+            "sub_category": item["sub_category"],
+            "attributes": item["attributes"],
+            "style_tags": item["style_tags"],
+            "description": item["description"],
+            "image_url": img_url
+        }
+        saved_item.append(insert_data)
+    if saved_item:
+        response = supabase_client.table("closet_items").insert(saved_item).execute()
+        print(f"저장 완료")

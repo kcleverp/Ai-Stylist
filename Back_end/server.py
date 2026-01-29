@@ -1,10 +1,12 @@
 from flask_cors import CORS
 from flask import Flask, request, jsonify
 from dotenv import load_dotenv
+from supabase import create_client
 from google import genai
 from google.genai import types
 from services.imagen import imagen
 from services.analyze import analyze
+from services.analyze import sendToDB
 from PIL import Image
 from datetime import datetime
 import json
@@ -16,7 +18,10 @@ import time
 server = Flask(__name__)
 CORS(server)
 load_dotenv("important.env")
+db_url = os.getenv("SUPABASE_DB_URL")
+db_key = os.getenv("SUPABASE_DB_API_KEY")
 client = genai.Client()
+supabase_client = create_client(db_url, db_key)
 style_label = ["A"]
 is_server = os.environ.get('RENDER') == 'true'
 if is_server:
@@ -240,8 +245,8 @@ def check_server():
 @server.route("/analyze", methods=["POST"])
 def analyzeImage():
     data = request.json
-    result = analyze(data, client)
-    print(result)
+    json_data = analyze(data, client)
+    sendToDB(json_data, data, supabase_client)
     pa = {"status":"success"}
     return pa
 
