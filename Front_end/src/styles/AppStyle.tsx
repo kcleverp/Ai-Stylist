@@ -4,7 +4,9 @@ export const styles = StyleSheet.create({
     container:{
         flex:1,
         backgroundColor:"#131313",
-
+    },
+    content:{
+        flex:1,
     },
     text:{
         color:"#dcd4d4",
@@ -54,7 +56,8 @@ export const styles = StyleSheet.create({
     },
     closetArea:{
         flex:1,
-        padding:10
+        padding:10,
+
     },
     closetSaveBtn:{
         backgroundColor:"#787777cf",
@@ -84,6 +87,35 @@ export const styles = StyleSheet.create({
     },
     Button:{
         alignItems:"center",
+    },
+    
+    tabBar: {
+    flexDirection: "row",
+    height: 100, 
+    backgroundColor: "#1a1a1a",
+    borderTopWidth: 1,
+    borderTopColor: "#333",
+    alignItems: "center",
+    justifyContent: "space-around",
+    paddingBottom: 20, 
+    },
+    tabItem: {
+        flex: 1,
+        alignItems: "center",
+        justifyContent: "center",
+    },
+    centerButton: {
+        width: 70,
+        height: 70,
+        borderRadius: 33,
+        backgroundColor: "#e4e1e1", 
+        marginTop: -55, 
+        justifyContent: "center",
+        alignItems: "center",
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.3,
+        shadowRadius: 5,
+        elevation: 8,
     }
-
 }) 
