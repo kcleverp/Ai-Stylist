@@ -1,31 +1,22 @@
-import { useState } from "react"
 import { StyleSheet, TextInput, View } from "react-native"
-import { Setting } from "../types/schema"
 import Button from "./Button"
-import UserInfo from "./UserInfo"
 
 type props = {
     sendInfo: () => void
-    getInfo: (infoList:Setting) => void
     input: string
     getInput: (input:string) => void
-    isWeatherLoading:boolean
 }
 
-
-export default function FooterPanel({sendInfo, getInfo, isWeatherLoading, getInput, input}:props){
-    const [isSettingOpen, setIsSettingOpen] = useState<boolean>(false)
+export default function FooterPanel({sendInfo, getInput, input}:props){
     return (
         <View style={style.container}>
-            <UserInfo isSettingOpen={isSettingOpen} setIsSettingOpen={setIsSettingOpen} getInfo={getInfo}/>
             <View style={style.inputContainer}>
                 <TextInput placeholder="#결혼식 하객룩" placeholderTextColor="rgb(200, 200, 200)" maxLength={50}
                 style={style.input} value ={input} onChangeText={(text) => {getInput(text)}} 
                 returnKeyType="send" onSubmitEditing={sendInfo}
                 {...({style: { ...style.input, outlineStyle:'none'}} as any)}/>
                 <View style={style.contorlBtn}>
-                    <Button fontColor="rgb(200, 200, 200)" fontSize={14} disabled={isWeatherLoading || !input} label="➤" onPress={() => sendInfo()} styles={style.button}/>
-                    <Button variant="Bold" fontColor="rgb(200, 200, 200)" fontSize={14} label="내정보" styles={style.button} onPress={() => {isSettingOpen ? setIsSettingOpen(false):setIsSettingOpen(true)}}/>
+                    <Button fontColor="rgb(200, 200, 200)" fontSize={14} disabled={!input} label="➤" onPress={() => sendInfo()} styles={style.button}/>
                 </View>
             </View>
         </View>

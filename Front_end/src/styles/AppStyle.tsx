@@ -123,5 +123,37 @@ export const styles = StyleSheet.create({
         shadowOpacity: 0.3,
         shadowRadius: 5,
         elevation: 8,
-    }
+    },
+     weatherContainer:{
+        height:100,
+        width:300,
+        backgroundColor:"#22212176",
+        alignItems:"center",
+        borderRadius:30,
+        borderWidth: 1,
+        borderColor: 'rgba(159, 155, 155, 0.18)',
+        gap:20,
+        position:"absolute",
+        padding:10,
+        top:80,
+    },
+    weatherTextContainer:{
+        flexDirection:"row",
+    },
+    weatherText:{
+        color:"#dcd4d4",
+        fontSize:18,
+        letterSpacing: 1.5
+    },
+    weatherRefreshButton:{
+        width:50,
+        height:35,
+        position:"absolute",
+        right:5,
+    },
+    icon:{
+        width:45,
+        height:30,
+        resizeMode: 'contain'
+    },
 }) 
