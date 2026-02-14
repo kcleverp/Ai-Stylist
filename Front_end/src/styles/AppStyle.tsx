@@ -39,6 +39,12 @@ export const styles = StyleSheet.create({
         flexWrap:"wrap",
         gap:5,
     },
+    closeBtn:{
+        width:45,
+        height:45,
+        paddingBottom:5,
+        marginRight:10
+    },
     imgClose:{
         position:"absolute",
         right:5,
