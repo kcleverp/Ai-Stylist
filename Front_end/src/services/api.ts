@@ -111,13 +111,13 @@ export const getDeviceId = async() => {
     }
 }
 
-export const sendToAnalyze = async(imgList:ClosetItem[],existingClosetId?: string) =>{
+export const sendToAnalyze = async(imgList:ClosetItem[], deviceId:string, existingClosetId?: string) =>{
     const imgUris = await uploadImage(imgList)
     if(!imgUris){
         alert("옷장 생성 실패")
         return null
     }
-    const deviceId = await getDeviceId()
+    
     const closetId = existingClosetId || uuidv4()
     const packaged = {
         deviceId: deviceId,
