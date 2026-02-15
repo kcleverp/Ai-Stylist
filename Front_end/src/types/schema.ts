@@ -6,6 +6,14 @@ export interface Setting{
   gender:string
   height:number
   weight:number
+  bmi:number
+}
+
+export interface RecommendationRequest{
+  userId:string,
+  userInput:string,
+  userInfo:Setting,
+  userWeather:Weather
 }
 
 export interface Weather{

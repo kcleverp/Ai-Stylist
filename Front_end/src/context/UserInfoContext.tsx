@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 const UserInfoContext = createContext<any>(null);
 
 export const InfoProvider = ({children}: {children: React.ReactNode}) => {
-    const [userInfo,setUserInfo] = useState<Setting>({userStyle:"", gender:"", height:0, weight:0})
+    const [userInfo,setUserInfo] = useState<Setting>({userStyle:"", gender:"", height:0, weight:0, bmi:0})
     useEffect(() => {
         const loadUser = async () => {
             const saved = await AsyncStorage.getItem("userInfo");
@@ -15,11 +15,8 @@ export const InfoProvider = ({children}: {children: React.ReactNode}) => {
     }, []);
 
     const updateUserInfo = async(newInfo:Setting) => {
-        const bmi = Number((newInfo.weight / ((newInfo.height / 100) ** 2)).toFixed(1));
-        const finalInfo = {...newInfo, bmi}
-
-        setUserInfo(finalInfo)
-        await AsyncStorage.setItem("userInfo", JSON.stringify(finalInfo))
+        setUserInfo(newInfo)
+        await AsyncStorage.setItem("userInfo", JSON.stringify(newInfo))
     };
     return (
         <UserInfoContext.Provider value={{ userInfo, updateUserInfo }}>

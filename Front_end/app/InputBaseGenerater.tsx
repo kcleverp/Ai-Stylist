@@ -1,20 +1,22 @@
 import FooterPanel from "@/src/component/FooterPanel";
 import ResultModal from "@/src/component/ResultModal";
 import AppText from "@/src/component/AppText";
-import { Contents } from "@/src/types/schema";
+import { Contents, RecommendationRequest } from "@/src/types/schema";
 import { useState } from "react";
-import { Alert, StyleSheet, View, ActivityIndicator, Image} from "react-native";
+import { Alert, StyleSheet, View} from "react-native";
 import {requestStyleRecommendation, requestDelete} from "@/src/services/api"
 import Button from "@/src/component/Button";
 import FirstLaunchModal from "@/src/component/FirstLaunchModal";
 import { useWeatherContext } from "@/src/context/WeatherContext";
 import { useUserInfoContext } from "@/src/context/UserInfoContext";
 import WeatherCard from "@/src/component/WeatherCard";
+import { useUserIdContext } from "@/src/context/UserIdContext";
 export default function InputBaseGenerater() {
   // state 영역
 
   const {userInfo} = useUserInfoContext()
   const {userWeather} = useWeatherContext()
+  const {userId} = useUserIdContext()
   const [userInput, setUserInput] = useState<string>("")
   const [contents, setContents] = useState<Contents| null>(null)
   const [isLoading, setIsLoading] = useState<boolean>(true)
@@ -36,7 +38,7 @@ export default function InputBaseGenerater() {
   const sendInfo = async () => {
     setIsLoading(true)
     setIsModalVisible(true)
-    const info = {"userInput":userInput,"userInfo":userInfo, "userWeather":userWeather}
+    const info:RecommendationRequest = {"userId": userId, "userInput":userInput, "userInfo":userInfo, "userWeather":userWeather}
     const attemptFetch = async(retriesLeft:number) => {
         try{
           const data = await requestStyleRecommendation(info)
@@ -80,14 +82,13 @@ export default function InputBaseGenerater() {
       requestDelete(contents?.data.recommendation.imgUrl)}
   }
 
-  
 
   return (
     <View style={style.container}>
       <WeatherCard/>
       <FirstLaunchModal isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen}/>
       <AppText style={style.text} variant="Bold">오늘은 어떤 스타일이 좋을까요?</AppText>
-      <FooterPanel input={userInput} getInput={getInput} sendInfo = {sendInfo}/>
+      <FooterPanel input={userInput} getInput={getInput} userWeather={userWeather} userId={userId} sendInfo = {sendInfo}/>
       <Button styles ={style.buttons}fontColor="#dcd4d4" label="개인정보 이용 안내" onPress={() => setIsModalOpen(true)}/>
       <ResultModal isLoading={isLoading} gender={userInfo.gender} WhenLoadingDone={whenLoadingDone} data = {contents} isVisible={isModalVisible} onClose={onClose}/>
     </View>

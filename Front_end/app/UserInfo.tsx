@@ -43,7 +43,9 @@ export default function UserInfo(){
         "height":  typeof height === "number" &&(height < 200 && height >= 100 ) ? height : 170 ,
         "weight": typeof weight === "number" && (weight < 200 && weight >= 25 ) ? weight : 60
       }
-      updateUserInfo(cleanInfo)
+      const bmi = Number((cleanInfo.weight / ((cleanInfo.height / 100) ** 2)).toFixed(1));
+      const finalInfo = {...cleanInfo, bmi}
+      updateUserInfo(finalInfo)
     }
 
     return (
