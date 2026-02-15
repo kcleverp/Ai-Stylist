@@ -5,7 +5,7 @@ import { styles } from "@/src/styles/AppStyle";
 import Button from "@/src/component/Button";
 import { useNavigateTo } from "@/src/services/useNavigateTo";
 import { WeatherProvider } from "@/src/context/WeatherContext";
-import { InfoProvider } from "@/src/context/InfoContext";
+import { InfoProvider } from "@/src/context/UserInfoContext";
 export default function RootLayout() {
   const {navigateTo} = useNavigateTo()
   const [fontsLoaded] = useFonts({

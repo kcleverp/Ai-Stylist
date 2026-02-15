@@ -8,7 +8,7 @@ import {requestStyleRecommendation, requestDelete} from "@/src/services/api"
 import Button from "@/src/component/Button";
 import FirstLaunchModal from "@/src/component/FirstLaunchModal";
 import { useWeatherContext } from "@/src/context/WeatherContext";
-import { useUserInfoContext } from "@/src/context/InfoContext";
+import { useUserInfoContext } from "@/src/context/UserInfoContext";
 import WeatherCard from "@/src/component/WeatherCard";
 export default function InputBaseGenerater() {
   // state 영역

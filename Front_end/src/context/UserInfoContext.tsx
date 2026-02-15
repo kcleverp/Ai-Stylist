@@ -8,8 +8,8 @@ export const InfoProvider = ({children}: {children: React.ReactNode}) => {
     const [userInfo,setUserInfo] = useState<Setting>({userStyle:"", gender:"", height:0, weight:0})
     useEffect(() => {
         const loadUser = async () => {
-        const saved = await AsyncStorage.getItem("userInfo");
-        if (saved) setUserInfo(JSON.parse(saved));
+            const saved = await AsyncStorage.getItem("userInfo");
+            if (saved) setUserInfo(JSON.parse(saved));
         };
         loadUser();
     }, []);

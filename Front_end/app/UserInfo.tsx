@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { StyleSheet, View, ScrollView } from "react-native";
-import { useUserInfoContext } from "@/src/context/InfoContext";
+import { useUserInfoContext } from "@/src/context/UserInfoContext";
 import Button from "../src/component/Button";
 import NumInput from "../src/component/NumInput";
 import Picker from "../src/component/Picker";
