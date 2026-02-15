@@ -19,16 +19,7 @@ export default function ResultModal({data, gender, isVisible, onClose, isLoading
     const recommendation = data?.data.recommendation
     const [currentIndex, setCurrentIndex] = useState(0);
     const {imgUrl = null, for_image = null} = recommendation || {}
-    const styleList = recommendation?.style
-    const styleData = styleList?.map((items) =>{
-        return{
-            "style_label" : items.style_label,
-            "answer" : items.for_answer,
-            "analysis" : items.style_analysis,
-            "hashtags" : items.hashtags,
-        }
-    })
-    const {answer = null, analysis = null , hashtags = null} = styleData?.[currentIndex] || {}    
+    const {for_answer = null, style_analysis = null , hashtags = null} =  recommendation?.style || {}
     
 
     const [isDetailsVisible, setIsDetailsVisible] = useState<boolean>(false) 
@@ -48,16 +39,16 @@ export default function ResultModal({data, gender, isVisible, onClose, isLoading
                 </View>
                 <View style = {style.itemBox}>
                     <View style={style.analysisBox}>
-                    {analysis !== null ?( 
-                        <AppText variant="SemiBold" style={{color:"#dcd4d4", fontSize:16, }}>{analysis}</AppText>): null} 
-                    {analysis === null? (
+                    {style_analysis !== null ?( 
+                        <AppText variant="SemiBold" style={{color:"#dcd4d4", fontSize:16, }}>{style_analysis}</AppText>): null} 
+                    {style_analysis === null? (
                         <AppText variant="SemiBold" style={{color:"#dcd4d4", fontSize:16, }}>사용자님의 코디를 생성중이에요</AppText>): null}
                     </View>
                     <View style={style.detailsBtn}>
                         <Button variant="Bold"fontColor="#dcd4d4" fontSize={18} label="코디 아이템 보기" styles={{flex:1}} onPress={() => setIsDetailsVisible(true)} />
                     </View>
                 </View>
-                <RecommendDeatils data={answer} isVisible={isDetailsVisible} onClose={onDetailsClose}/>
+                <RecommendDeatils data={for_answer} isVisible={isDetailsVisible} onClose={onDetailsClose}/>
             </View>
         </Modal>
     )

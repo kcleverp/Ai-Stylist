@@ -10,10 +10,9 @@ import AppText from "../src/component/AppText";
 export default function UserInfo(){
     const {userInfo, updateUserInfo} = useUserInfoContext()
     const items = [
-        { label: '스트릿', value: 'street' },
-        { label: '댄디', value: 'dendy' },
-        { label: '미니멀', value: 'minimal' },
-        { label: "캐주얼", value: "casual" },
+        { label: '스트릿', value: 'trendy_street' },
+        { label: '클래식', value: 'classic_heritage' },
+        { label: "캐주얼", value: "preppy_youth" },
     ]
     const genders = [
         { label: "남성", value: 'male' },

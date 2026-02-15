@@ -69,7 +69,7 @@ export interface Contents{
   "timestamp": string,
   "data": {
       "recommendation":{
-          "style":Style[], 
+          "style":Style, 
           "for_image":ForImage,
           "imgUrl":ImgUrl
       },  
