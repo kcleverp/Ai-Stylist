@@ -8,3 +8,4 @@ pytz
 gunicorn
 httpx
 supabase
+fal_client

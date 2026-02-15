@@ -27,6 +27,7 @@ __pycache__
 *prompt.txt
 *image_requirements.txt
 *image_layouts.py
+Back_end/prompts
 *data
 
 # --- [ 4. Backend Generated Files ] ---

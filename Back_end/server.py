@@ -7,6 +7,7 @@ from google.genai import types
 from services.imagen import imagen
 from services.analyze import analyze
 from services.analyze import sendToDB
+from services.flux import flux
 from PIL import Image
 from datetime import datetime
 import json
@@ -24,20 +25,13 @@ client = genai.Client()
 supabase_client = create_client(db_url, db_key)
 style_label = ["A"]
 is_server = os.environ.get('RENDER') == 'true'
-if is_server:
-    server_propmts_path = "prompt.txt"
-    if os.path.exists(server_propmts_path):
-        with open(server_propmts_path,"r",encoding="utf-8") as f:
-            SYSTEM_PROMPT = f.read()
-    else:
-        SYSTEM_PROMPT = ""
+
+propmts_path = "fluxver_prompt.txt" if is_server else "prompts/fluxver_prompt.txt" 
+if os.path.exists(propmts_path):
+    with open(propmts_path,"r",encoding="utf-8") as f:
+        SYSTEM_PROMPT = f.read()
 else:
-    local_prompt_path ="prompts/prompt.txt" 
-    if os.path.exists(local_prompt_path):
-        with open(local_prompt_path,"r",encoding="utf-8") as f:
-            SYSTEM_PROMPT = f.read()
-    else:
-        SYSTEM_PROMPT = ""
+    SYSTEM_PROMPT = ""
 
 
 OPEN_WEATHER_MAP_API_KEY = os.getenv("OPEN_WEATHER_MAP_API_KEY")
@@ -61,7 +55,7 @@ def getWeather():
         feels_like = round(main.get("feels_like") - 273.15,1)
     except Exception as e:
         print(f"날씨 API 에러 발생: {e}")
-        return jsonify({"error":str(e), "Code": 500}), 500
+        return jsonify({"error":"오류", "Code": 500}), 500
     
     weather = {
         "description_weather": description_weather,
@@ -75,6 +69,7 @@ def getWeather():
 #코디 생성 로직
 @server.route("/create",methods=["POST"])
 def createAnswer():
+    start = time.time()
     data = request.json
     raw_userInput = data.get("userInput","")
     trim_text = " ".join(raw_userInput.split())
@@ -92,12 +87,14 @@ def createAnswer():
     userGender = userInfo.get('gender')
     userHeight = userInfo.get('height')
     userWeight = userInfo.get('weight')
+    userBmi = userInfo.get("bmi")
     cleanInfo = {
-        "style": userStyle if (userStyle in ["street","dendy","minimal","casual"]) else"casual", 
+        "style": userStyle if (userStyle in ["trendy_street","classic_heritage","preppy_youth"]) else "preppy_youth", 
         "gender": userGender if (userGender in ["male","female"] ) else "male",
         "height":  userHeight if userHeight is not None and (userHeight < 200 and userHeight >= 100 ) else  170 ,
         "weight":  userWeight if userWeight is not None and (userWeight < 200 and userWeight >= 25 ) else 60
         }
+    
     weatherData = data.get("userWeather")
     description_weather = weatherData.get("description_weather")
     temp = weatherData.get("temp")
@@ -109,53 +106,53 @@ def createAnswer():
     height = cleanInfo.get('height')
     weight = cleanInfo.get('weight')
     style = cleanInfo.get('style')
-    trendData = ""
-    if is_server:
-        trendJson = f"{gender}.json"
-        if (os.path.exists(trendJson)):
-            with open(trendJson, "r", encoding="utf-8") as f:
-                trendData = f.read()
-        else:
-            trendData=""
-            print(f"경고: {trendJson} 파일이 서버에 없습니다.")
+    selected_trend_data= ""
+    
+    trendJson = f"{gender}.json" if is_server else f"data/trends/{gender}.json"
+    if (os.path.exists(trendJson)):
+        with open(trendJson, "r", encoding="utf-8") as f:
+            full_trend_dict = json.load(f)
+            styles_dict = full_trend_dict.get('styles', {})
+            selected_block = styles_dict.get(style, {})
+            if selected_block:
+                # Gemini가 읽기 좋게 JSON 문자열로 변환 (한글 깨짐 방지)
+                selected_trend_data = json.dumps(selected_block, ensure_ascii=False)
+            else:
+                print(f"경고: {style} 스타일이 JSON 내에 정의되어 있지 않습니다.")
+
     else:
-        trendJson = f"data/trends/{gender}.json"
-        if (os.path.exists(trendJson)):
-            with open(trendJson, "r", encoding="utf-8") as f:
-                trendData = f.read()
-        else:
-            trendData=""
-            print(f"경고: {trendJson} 파일이 서버에 없습니다.")
+        selected_trend_data = ""
+        print(f"경고: {trendJson} 파일이 서버에 없습니다.")
 
-    final_answer_prompt = f"{SYSTEM_PROMPT}\n{trendData}"
+    final_answer_prompt = f"{SYSTEM_PROMPT}\n{selected_trend_data}"
+    print("코디 생성 시작")
     try: 
+        t1 = time.time()
         ai_response = client.models.generate_content(
-            model = "gemini-3-flash-preview",
+            model = "gemini-2.5-flash",
             contents =f"""
-            [INPUT_DATA]
-            {style_label}
-
-            [userInput]
-            {userInput}
-
             [userInfo]
             gender: {gender}
-            height: {height}cm
-            weight: {weight}kg
+            Height/Weight: {height}cm / {weight}kg
+            Bmi: {userBmi}
             perfer_style: {style}
+            User's request: {userInput}
 
             [weatherCondition]
-            temperature:{temp}℃
-            feels_like:{feels_like}℃
-            description_weather:{description_weather}
+            Temp:{temp}℃ (Feels like:{feels_like}℃)
+            sky:{description_weather}
             """,
             config=types.GenerateContentConfig(
                 system_instruction=final_answer_prompt,
-                response_mime_type="application/json"
+                response_mime_type="application/json",
+                temperature = 0.5,
             )    
         )
+        print("gemini 응답시간",time.time() - t1)
+        t2 = time.time()
         raw_ai_response = ai_response.text
         answer = json.loads(raw_ai_response)
+        print("json 파싱 시간", time.time() - t2)
     except Exception as e:
         print(f"코디 생성중 오류발생: {e}")
         result = {
@@ -170,10 +167,13 @@ def createAnswer():
             },
         }
         return jsonify(result)
+    print(answer)
+    print("코디생성 완료 소요시간:",time.time() - start)
     #이미지 생성 로직
     imageData = answer.get("for_image")
     expected = len(style_label)
-    imgUrl = imagen(imageData, expected, gender, client)
+    # imgUrl = imagen(imageData, expected, gender, client)
+    imgUrl = flux(imageData)
     
     #프론트 엔드로 데이터 파싱 로직
     style_recommendation = answer.get("style_recommendation")
@@ -225,7 +225,7 @@ def cleanup_image():
         except Exception as e:
             result = {
                 "status":"error",
-                "message":str(e)
+                "message":"오류"
             }
             return jsonify(result), 500
     return jsonify({"status": "error", "message": "File not found"}), 404
