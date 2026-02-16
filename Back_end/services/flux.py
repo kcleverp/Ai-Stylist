@@ -1,30 +1,20 @@
 from dotenv import load_dotenv
 import uuid
-import os
 import fal_client
-
-load_dotenv("layouts.env")
+import services.loadData as loadData
 load_dotenv("important.env")
 
-def flux(imageData):
-    if os.path.exists("prompts/image_requirements.txt"):
-        with open("prompts/image_requirements.txt","r",encoding="utf-8") as f:
-            image_requirements = f.read()
-    else:
-        image_requirements = "지정된 이미지 프롬프트 없음 [오류]라고 출력"
+def flux(imageData, character):
+    print(imageData)
     unique_id = uuid.uuid4().hex
     imgUrl = f"static/style_output{unique_id}.png"
     image_prompt = ""
 
     if imageData:
-        character = imageData.get("character", "")
         outfits = imageData.get("outfits") or {}
-
         subject = character if character else "A fashion model"
-
         outerwear = outfits.get("outerwear", "")
         top = outfits.get("top", "")
-        neck_acc = outfits.get("neck_acc", "")
         bottom = outfits.get("bottom", "")
         shoes = outfits.get("shoes", "")
 
@@ -39,8 +29,6 @@ def flux(imageData):
 
         if bottom:
             outfit_parts.append(bottom)
-        if neck_acc:
-            outfit_parts.append(neck_acc)
         if shoes:
             outfit_parts.append(shoes)
 
@@ -49,17 +37,17 @@ def flux(imageData):
         else:
             outfit_desc = ", ".join(outfit_parts)
 
-        image_prompt = f"{subject} wearing {outfit_desc}."
+        image_prompt = f"\n{subject} wearing {outfit_desc}"
 
-    final_image_prompt = f"{image_requirements}\n### SUBJECT ###\n{image_prompt}"
-
- 
+    final_image_prompt = f"{loadData.IMAGE_REQUIREMENTS}\n#SUBJECT#\n{image_prompt}"
     try: 
         flux_response = fal_client.subscribe(
             "fal-ai/flux-1/schnell",
             arguments={
                 "prompt": final_image_prompt,
-                "num_inference_steps": 6
+                "num_inference_steps": 8,
+                "width": 1024,
+                "height": 1024,
             },
         )
         

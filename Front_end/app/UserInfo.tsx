@@ -15,8 +15,8 @@ export default function UserInfo(){
         { label: "캐주얼", value: "casual" },
     ]
     const genders = [
-        { label: "남성", value: 'male' },
-        { label: '여성', value: 'female' },
+        { label: "남성", value: 'Man' },
+        { label: '여성', value: 'Woman' },
     ]
     const [userStyle,setUserStyle] = useState<string>("")
     const [gender,setGender] = useState<string>("")
@@ -38,7 +38,7 @@ export default function UserInfo(){
         }
         const cleanInfo = {
         "userStyle": userStyle || "casual", 
-        "gender": gender || "male",
+        "gender": gender || "Man",
         "height":  typeof height === "number" &&(height < 200 && height >= 100 ) ? height : 170 ,
         "weight": typeof weight === "number" && (weight < 200 && weight >= 25 ) ? weight : 60
       }

@@ -8,6 +8,8 @@ from services.imagen import imagen
 from services.analyze import analyze
 from services.analyze import sendToDB
 from services.flux import flux
+from services.loadData import load_all_data, get_bmi, get_trend
+import services.loadData as loadData
 from PIL import Image
 from datetime import datetime
 import json
@@ -25,15 +27,7 @@ client = genai.Client()
 supabase_client = create_client(db_url, db_key)
 style_label = ["A"]
 is_server = os.environ.get('RENDER') == 'true'
-
-propmts_path = "fluxver_prompt.txt" if is_server else "prompts/fluxver_prompt.txt" 
-if os.path.exists(propmts_path):
-    with open(propmts_path,"r",encoding="utf-8") as f:
-        SYSTEM_PROMPT = f.read()
-else:
-    SYSTEM_PROMPT = ""
-
-
+load_all_data(is_server)
 OPEN_WEATHER_MAP_API_KEY = os.getenv("OPEN_WEATHER_MAP_API_KEY")
 start_time = time.time()
 
@@ -71,6 +65,8 @@ def getWeather():
 def createAnswer():
     start = time.time()
     data = request.json
+    print(data)
+    # 유저 입력 필터링
     raw_userInput = data.get("userInput","")
     trim_text = " ".join(raw_userInput.split())
     clean_text = re.sub(r"[ㄱ-ㅎㅏ-ㅣ]+", "", trim_text).strip()
@@ -82,65 +78,67 @@ def createAnswer():
     elif any(keyword in clean_text.lower() for keyword in forbidden_keywords): #금지어가 들어가있는지 확인
         return jsonify({"error":"부적절한 입력", "Code": 500}), 500
     userInput = clean_text
+    # 유저 정보 로드
     userInfo = data.get("userInfo")
     userStyle = userInfo.get('userStyle')
     userGender = userInfo.get('gender')
     userHeight = userInfo.get('height')
     userWeight = userInfo.get('weight')
     userBmi = userInfo.get("bmi")
+
+    #유저 정보 필터링
     cleanInfo = {
-        "style": userStyle if (userStyle in ["trendy_street","classic_heritage","preppy_youth"]) else "preppy_youth", 
-        "gender": userGender if (userGender in ["male","female"] ) else "male",
+        "style": userStyle if (userStyle in ["street", "classic", "casual"]) else "casual", 
+        "gender": userGender if (userGender in ["Man","Woman"] ) else "Man",
         "height":  userHeight if userHeight is not None and (userHeight < 200 and userHeight >= 100 ) else  170 ,
-        "weight":  userWeight if userWeight is not None and (userWeight < 200 and userWeight >= 25 ) else 60
+        "weight":  userWeight if userWeight is not None and (userWeight < 200 and userWeight >= 25 ) else 60,
+        "bmi": userBmi if userBmi is not (userHeight/userWeight) else 170/60
         }
     
+    #날씨 정보 로드
     weatherData = data.get("userWeather")
     description_weather = weatherData.get("description_weather")
     temp = weatherData.get("temp")
     feels_like = weatherData.get("feels_like")
+
+    #시간 정보 로드
     kst = pytz.timezone('Asia/Seoul')
     now = datetime.now(kst)
     timestamp = now.strftime('%Y-%m-%dT%H:%M:%S%z')
+
+    #최종 유저 정보 로드
     gender = cleanInfo.get("gender")
     height = cleanInfo.get('height')
     weight = cleanInfo.get('weight')
     style = cleanInfo.get('style')
-    selected_trend_data= ""
-    
-    trendJson = f"{gender}.json" if is_server else f"data/trends/{gender}.json"
-    if (os.path.exists(trendJson)):
-        with open(trendJson, "r", encoding="utf-8") as f:
-            full_trend_dict = json.load(f)
-            styles_dict = full_trend_dict.get('styles', {})
-            selected_block = styles_dict.get(style, {})
-            if selected_block:
-                # Gemini가 읽기 좋게 JSON 문자열로 변환 (한글 깨짐 방지)
-                selected_trend_data = json.dumps(selected_block, ensure_ascii=False)
-            else:
-                print(f"경고: {style} 스타일이 JSON 내에 정의되어 있지 않습니다.")
+    bmi = cleanInfo.get("bmi")
+    physique_info = get_bmi(gender, bmi)  # 체형 데이터
+    trend_info = get_trend(gender, style) # 트렌드 데이터
+    character = f" {gender} with {physique_info} "
+    final_answer_prompt = f"""
+    #[SYSTEM_PROMPT]#
+    {loadData.SYSTEM_PROMPT}
 
-    else:
-        selected_trend_data = ""
-        print(f"경고: {trendJson} 파일이 서버에 없습니다.")
+    #[STYLE_GUIDELINE]#
+    {trend_info}
 
-    final_answer_prompt = f"{SYSTEM_PROMPT}\n{selected_trend_data}"
+    #[USER_PHYSICAL_SPEC]#
+    - Gender: {gender}
+    - Height: {height}cm
+    - Weight: {weight}kg
+    - Body Description: {physique_info}
+    """
     print("코디 생성 시작")
     try: 
         t1 = time.time()
         ai_response = client.models.generate_content(
             model = "gemini-2.5-flash",
             contents =f"""
-            [userInfo]
-            gender: {gender}
-            Height/Weight: {height}cm / {weight}kg
-            Bmi: {userBmi}
-            perfer_style: {style}
-            User's request: {userInput}
-
             [weatherCondition]
-            Temp:{temp}℃ (Feels like:{feels_like}℃)
-            sky:{description_weather}
+            Temp:{temp}℃ (Feels like:{feels_like}℃), Sky:{description_weather}
+
+            [User's Message] 
+            {userInput}
             """,
             config=types.GenerateContentConfig(
                 system_instruction=final_answer_prompt,
@@ -152,7 +150,6 @@ def createAnswer():
         t2 = time.time()
         raw_ai_response = ai_response.text
         answer = json.loads(raw_ai_response)
-        print("json 파싱 시간", time.time() - t2)
     except Exception as e:
         print(f"코디 생성중 오류발생: {e}")
         result = {
@@ -167,13 +164,12 @@ def createAnswer():
             },
         }
         return jsonify(result)
-    print(answer)
     print("코디생성 완료 소요시간:",time.time() - start)
     #이미지 생성 로직
     imageData = answer.get("for_image")
     expected = len(style_label)
     # imgUrl = imagen(imageData, expected, gender, client)
-    imgUrl = flux(imageData)
+    imgUrl = flux(imageData, character)
     
     #프론트 엔드로 데이터 파싱 로직
     style_recommendation = answer.get("style_recommendation")
