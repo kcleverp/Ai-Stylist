@@ -65,7 +65,6 @@ def getWeather():
 def createAnswer():
     start = time.time()
     data = request.json
-    print(data)
     # 유저 입력 필터링
     raw_userInput = data.get("userInput","")
     trim_text = " ".join(raw_userInput.split())
@@ -85,7 +84,7 @@ def createAnswer():
     userHeight = userInfo.get('height')
     userWeight = userInfo.get('weight')
     userBmi = userInfo.get("bmi")
-
+    userId = userInfo.get("userId")
     #유저 정보 필터링
     cleanInfo = {
         "style": userStyle if (userStyle in ["street", "classic", "casual"]) else "casual", 
@@ -114,7 +113,7 @@ def createAnswer():
     bmi = cleanInfo.get("bmi")
     physique_info = get_bmi(gender, bmi)  # 체형 데이터
     trend_info = get_trend(gender, style) # 트렌드 데이터
-    character = f" {gender} with {physique_info} "
+    character = f"{gender} with {physique_info}"
     final_answer_prompt = f"""
     #[SYSTEM_PROMPT]#
     {loadData.SYSTEM_PROMPT}
@@ -128,7 +127,6 @@ def createAnswer():
     - Weight: {weight}kg
     - Body Description: {physique_info}
     """
-    print("코디 생성 시작")
     try: 
         t1 = time.time()
         ai_response = client.models.generate_content(
@@ -169,7 +167,7 @@ def createAnswer():
     imageData = answer.get("for_image")
     expected = len(style_label)
     # imgUrl = imagen(imageData, expected, gender, client)
-    imgUrl = flux(imageData, character)
+    imgUrl = flux(imageData, character, userId)
     
     #프론트 엔드로 데이터 파싱 로직
     style_recommendation = answer.get("style_recommendation")
