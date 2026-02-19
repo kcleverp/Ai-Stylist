@@ -46,11 +46,11 @@ def flux(imageData, character, userId=None):
     final_image_prompt = f"{loadData.IMAGE_REQUIREMENTS}\n#SUBJECT#\n{image_prompt}"
     try: 
         flux_response = fal_client.subscribe(
-            "fal-ai/flux-2/klein/4b",
+            "fal-ai/flux-2/klein/9b",
             arguments={
                 "prompt": final_image_prompt,
                 "num_inference_steps": 8,
-                "seed":FAL_SEED,
+                "seed": FAL_SEED,
                 "output_format": "webp"
             },
         )
