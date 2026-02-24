@@ -1,7 +1,8 @@
-import { Info, ImgUrl,ForImage, ClosetItem} from "../types/schema"
+import { Info, ImgUrl,ForImage, ClosetItem, Closet} from "../types/schema"
 import {v4 as uuidv4} from "uuid"
 import { Platform } from "react-native";
 import * as Application from 'expo-application';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 const serverUrl = process.env.EXPO_PUBLIC_SERVER_URL;
 
 export const requestStyleRecommendation = async(data:Info) => {
@@ -95,7 +96,6 @@ export const uploadImage = async(imgList:ClosetItem[]) => {
             return data.secure_url
         });
         const finalResult = await Promise.all(uploadPromise)
-        alert("옷장 등록에 성공했어요")
         return finalResult
     }catch(e){
         console.log("Cloudinary 통신 실패", e)
@@ -111,7 +111,7 @@ export const getDeviceId = async() => {
     }
 }
 
-export const sendToAnalyze = async(imgList:ClosetItem[], deviceId:string, existingClosetId?: string) =>{
+export const sendToAnalyze = async(imgList:ClosetItem[], deviceId:string, name:string, existingClosetId?: string) =>{
     const imgUris = await uploadImage(imgList)
     if(!imgUris){
         alert("옷장 생성 실패")
@@ -122,6 +122,7 @@ export const sendToAnalyze = async(imgList:ClosetItem[], deviceId:string, existi
     const packaged = {
         deviceId: deviceId,
         closetId: closetId,
+        name: name,
         images: imgUris
     }
     try{
@@ -137,10 +138,60 @@ export const sendToAnalyze = async(imgList:ClosetItem[], deviceId:string, existi
             return null
         }
         const analyzedData = await response.json()
-        console.log("이미지 분석 완료, 분석 정보 수령", analyzedData)
-
+        const closetId = analyzedData.closetId
+        const closetName = analyzedData.name
+        console.log("이미지 분석 완료, 분석 정보 수령", closetId)
+        addNewCloset(closetId, closetName)
+        alert("옷장 등록에 성공했어요")
     }catch(e){
         alert("옷장 생성 실패(서버 통신불가)")
         return null
+    }
+}
+
+
+const addNewCloset = async (id:string, name:string) => {
+    try{
+        const stored = await AsyncStorage.getItem('closet_list');
+        const list = stored ? JSON.parse(stored) : [];
+        const newCloset = {
+            closetId: id,
+            closetName: name
+        }
+        const isExist = list.some((item:Closet) => item.closetId === id);
+        if (!isExist) {
+        const updatedList = [...list, newCloset];
+        await AsyncStorage.setItem('closet_list', JSON.stringify(updatedList));
+        }
+    }catch(e){
+        console.log("저장실패",e)
+    }
+};
+
+export const loadClosetData = async (userId:string, closetId?:string) => {
+    try{
+        let url = `${serverUrl}/requestClosetData?userId=${userId}`
+        if (closetId) {
+            url += `&closetId=${closetId}`;
+        }
+        const response = await fetch(url, {
+            "method":"GET",
+            "headers":{
+                "Content-Type":"application/json"
+            }
+        }) 
+        if(!response.ok){
+            alert("옷장정보를 불러오는데 실패했어요")
+            return null
+        }
+        const answer = await response.json()
+        if(closetId){
+            const loadedClosetItems = answer.items
+            return loadedClosetItems
+        }
+        const loadedClosets = answer.closets
+        return loadedClosets
+    }catch(e){
+        alert("서버와 통신에 실패했어요")
     }
 }

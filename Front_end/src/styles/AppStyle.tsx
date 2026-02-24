@@ -3,6 +3,7 @@ import { StyleSheet } from "react-native";
 export const styles = StyleSheet.create({
     container:{
         flex:1,
+        alignItems:"center",
         backgroundColor:"#131313",
     },
     content:{
@@ -21,7 +22,7 @@ export const styles = StyleSheet.create({
         borderTopColor: '#555',
         borderRadius:30,
         width:"30%",
-        height:"40%",
+        height:"35%",
         aspectRatio:3/4,
         padding:5,
     },
@@ -38,6 +39,12 @@ export const styles = StyleSheet.create({
         flexDirection:"row",
         flexWrap:"wrap",
         gap:5,
+    },
+    closetContentsContainer:{
+        height: 380, 
+        flexGrow: 0,    
+        marginBottom: 20,
+        marginTop: 20,
     },
     closeBtn:{
         width:45,
@@ -57,23 +64,12 @@ export const styles = StyleSheet.create({
     },
     imgChip:{
         width:"30%",
+        height:"35%",
         aspectRatio:3/4,
-        
     },
     closetArea:{
         flex:1,
         padding:10,
-
-    },
-    closetSaveBtn:{
-        backgroundColor:"#787777cf",
-        borderWidth:1,
-        borderColor: '#434242ac',      
-        borderTopColor: '#555',
-        borderRadius:30,
-        width: 200,
-        height: 40,
-        alignSelf:"center"
     },
     textButton:{
         flex:1,

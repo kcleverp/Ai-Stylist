@@ -41,7 +41,10 @@ export interface Recommendation {
     bottom:string
     shoes:string
 }
-
+export interface Closet{
+  closetId:string,
+  closetName:string
+}
 export interface Style{
   style_label: string,  
   style_analysis: string;
@@ -86,7 +89,4 @@ export interface ClosetItem{
 export interface imgList{
     imgList:ClosetItem[]
     setImgList:(item:ClosetItem[]) => void
-}
-export interface ClosetData{
-
 }
