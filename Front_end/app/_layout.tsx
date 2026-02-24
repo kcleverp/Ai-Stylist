@@ -31,15 +31,16 @@ export default function RootLayout() {
               headerTitleStyle: { fontWeight: "bold" },
               // 왼쪽 위에 홈 버튼(로고) 배치
               headerLeft: () => (
-                <Button fontColor="#ffffffff" styles={styles.closeBtn} fontSize={25} label="<" onPress={() => navigateTo("/")}/>
+                <Button fontColor="#ffffffff" styles={styles.closeBtn} fontSize={25} label="⌂" onPress={() => navigateTo("/")}/>
               ),
             }}
           >
             {/* 개별 화면 설정 */}
             <Stack.Screen name="index" options={{title:"홈"}}/>
             <Stack.Screen name="InputBaseGenerater" options={{ title: "오늘 코디" }} />
-            <Stack.Screen name="myCloset" options={{ title: "내 옷장" }} />
+            <Stack.Screen name="MyCloset" options={{ title: "내 옷장" }} />
             <Stack.Screen name="UserInfo" options={{ title: "내 정보" }} />
+            <Stack.Screen name="ClosetLibrary" options={{ title: "옷장 목록" }} />
           </Stack>
           <TabBar />
         </WeatherProvider>
