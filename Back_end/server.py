@@ -5,7 +5,7 @@ from supabase import create_client
 from google import genai
 from google.genai import types
 from services.imagen import imagen
-from services.analyze import analyze
+from services.analyze import analyze, load_db_data
 from services.analyze import sendToDB
 from services.flux import flux
 from services.loadData import load_all_data, get_bmi, get_trend
@@ -233,16 +233,26 @@ def check_server():
         "time_stamp":time.time(),
         "uptime":uptime_str
     }
-    return result
+    return jsonify(result)
 
 
 @server.route("/analyze", methods=["POST"])
 def analyzeImage():
     data = request.json
     json_data = analyze(data, client)
-    sendToDB(json_data, data, supabase_client)
-    pa = {"status":"success"}
-    return pa
+    result = sendToDB(json_data, data, supabase_client)
+    return result
+
+@server.route("/requestClosetData", methods=["GET"])
+def requestClosetData():
+    user_id = request.args.get('userId')
+    closet_id = request.args.get('closetId')
+    if(not user_id):
+        return jsonify({"status": "error", "message": "userId가 필요합니다."}), 400
+    
+    response = load_db_data(supabase_client= supabase_client, user_id= user_id, closet_id= closet_id)
+
+    return jsonify(response)
 
 if __name__ == "__main__":
     # Render가 주는 PORT 환경변수를 사용하고, 없으면 10000을 사용합니다.
