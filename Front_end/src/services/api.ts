@@ -149,7 +149,6 @@ export const sendToAnalyze = async(imgList:ClosetItem[], deviceId:string, name:s
     }
 }
 
-
 const addNewCloset = async (id:string, name:string) => {
     try{
         const stored = await AsyncStorage.getItem('closet_list');
@@ -185,12 +184,32 @@ export const loadClosetData = async (userId:string, closetId?:string) => {
             return null
         }
         const answer = await response.json()
-        if(closetId){
-            const loadedClosetItems = answer.items
-            return loadedClosetItems
+        if(answer.status ==="error"){
+            alert("옷장 목록 로드에 실패했어요")
+            return null
         }
-        const loadedClosets = answer.closets
-        return loadedClosets
+        return answer
+    }catch(e){
+        alert("서버와 통신에 실패했어요")
+    }
+}
+
+export const editData = async(closetId: string, name:string ) => {
+    try{
+        const data = {"closetId": closetId, "newName": name}
+        const response = await fetch(`${serverUrl}/editData`, {
+            "method": "PATCH",
+            "headers": {
+                "Content-Type": "application/json"
+            },
+            "body":JSON.stringify(data)
+        })
+        if(!response.ok){
+            alert("이름 수정에 실패했어요")
+            return null
+        }
+        const answer = await response.json()
+        return answer
     }catch(e){
         alert("서버와 통신에 실패했어요")
     }

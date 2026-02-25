@@ -1,12 +1,13 @@
 import {View, StyleSheet} from "react-native"
-import {styles} from "@/src/styles/AppStyle"
 import { useEffect, useState } from "react";
 import { useUserIdContext } from "@/src/context/UserIdContext";
 import { loadClosetData } from "@/src/services/api";
 import ClosetChips from "@/src/myClosetComponent/ClosetChips";
+ 
 export default function ClosetLibrary(){
-    const [closet, setCloset] = useState()
+    const [closet, setCloset] = useState<any[]>([])
     const {userId} = useUserIdContext()
+  
     useEffect(() => {
         const loadCloset = async() => {
             const data = await loadClosetData(userId)
@@ -17,13 +18,18 @@ export default function ClosetLibrary(){
         loadCloset()
     }, [])
     return(
-    <View style={styles.container}>
-        <ClosetChips data={closet}/>
-    </View>
+        <View style={style.container}>
+            <ClosetChips data={closet} setData={setCloset}/>
+        </View>
     )
 }
 
 const style = StyleSheet.create({
+    container:{
+        flex:1,
+        backgroundColor:"#131313",
+        padding:10,
+    },
     button:{
         backgroundColor:"#787777cf",
         borderWidth:1,

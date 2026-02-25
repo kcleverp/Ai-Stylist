@@ -5,6 +5,7 @@ import { FontVariants } from "../types/schema"
 type props = {
     label?:string
     onPress:() => void
+    onLongPress?:() => void
     fontColor?:string
     variant?:FontVariants
     fontSize?:number
@@ -13,7 +14,7 @@ type props = {
     disabled?:boolean
 }
 
-export default function Button({onPress,label,fontSize, fontColor, disabled, variant, children, styles}:props){
+export default function Button({onPress, onLongPress, label, fontSize, fontColor, disabled, variant, children, styles}:props){
     return(
         <Pressable
          style = {({pressed}) =>([
@@ -23,6 +24,8 @@ export default function Button({onPress,label,fontSize, fontColor, disabled, var
             disabled && {opacity:0.4}
         ])}
             onPress = {onPress}
+            onLongPress={onLongPress}
+            delayLongPress={500}
             disabled={disabled}>
             {label &&
                 <AppText variant= {variant} style={{color:fontColor, fontSize:fontSize}}>{label}</AppText>}
