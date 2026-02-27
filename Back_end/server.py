@@ -5,8 +5,8 @@ from supabase import create_client
 from google import genai
 from google.genai import types
 from services.imagen import imagen
-from services.analyze import analyze, load_db_data
-from services.analyze import sendToDB
+from services.analyze import analyze
+from services.aboutDB import sendToDB, load_db_data, edit_db_data
 from services.flux import flux
 from services.loadData import load_all_data, get_bmi, get_trend
 import services.loadData as loadData
@@ -254,6 +254,15 @@ def requestClosetData():
 
     return jsonify(response)
 
+@server.route("/editData", methods=["PATCH"])
+def editData():
+    data = request.json
+    closet_id = data.get("closetId")
+    new_name = data.get("newName")
+    if (not closet_id or not new_name):
+        return jsonify({"status": "error", "message": "closetId와 newName이 모두 필요합니다."}), 400
+    response = edit_db_data(closet_id= closet_id, new_name= new_name, supabase_client= supabase_client)
+    return jsonify(response)
 if __name__ == "__main__":
     # Render가 주는 PORT 환경변수를 사용하고, 없으면 10000을 사용합니다.
     port = int(os.environ.get("PORT", 10000))
