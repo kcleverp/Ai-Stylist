@@ -1,24 +1,7 @@
 import json
-import os
 import httpx
 from google.genai import types
-
-is_server = os.environ.get('RENDER') == 'true'
-if is_server:
-        server_propmts_path = "analyze_prompt.txt"
-        if os.path.exists(server_propmts_path):
-            with open(server_propmts_path,"r",encoding="utf-8") as f:
-                ANALYZE_PROMPT = f.read()
-        else:
-            ANALYZE_PROMPT = ""
-else:
-    local_prompt_path ="prompts/analyze_prompt.txt" 
-    if os.path.exists(local_prompt_path):
-        with open(local_prompt_path,"r",encoding="utf-8") as f:
-            ANALYZE_PROMPT = f.read()
-    else:
-        ANALYZE_PROMPT = ""
-
+import services.loadData as loadData
 def analyze(data, client):
     imagesUrl = data.get("images",[])
     image_parts = []
@@ -48,7 +31,7 @@ def analyze(data, client):
             model = "gemini-3-flash-preview",
             contents=["Extract data from this image according to the defined format.", *image_parts],
             config=types.GenerateContentConfig(
-                system_instruction= ANALYZE_PROMPT,
+                system_instruction= loadData.ANALYZE_PROMPT,
                 response_mime_type="application/json",
             )
         )

@@ -6,14 +6,16 @@ _BMI_DATA = None
 _TREND_DATA = None
 SYSTEM_PROMPT = ""
 IMAGE_REQUIREMENTS = ""
+ANALYZE_PROMPT = ""
 def load_all_data(is_server):
     """서버 시작 시 데이터를 메모리에 로드하는 함수"""
-    global _BMI_DATA, _TREND_DATA, SYSTEM_PROMPT, IMAGE_REQUIREMENTS
+    global _BMI_DATA, _TREND_DATA, SYSTEM_PROMPT, IMAGE_REQUIREMENTS, ANALYZE_PROMPT
     
     bmi_path = "bmi.json" if is_server else "data/bmi/bmi.json"
     trend_path = "trend.json" if is_server else "data/trends/trend.json"
     propmts_path = "fluxver_prompt.txt" if is_server else "prompts/fluxver_prompt.txt" 
     image_requirements_path = "image_requirements.txt" if is_server else "prompts/image_requirements.txt"
+    analyze_prompt_path = "analyze_prompt.txt" if is_server else "prompts/analyze_prompt.txt"
     
     try:
         if os.path.exists(bmi_path):
@@ -31,6 +33,10 @@ def load_all_data(is_server):
         if os.path.exists(image_requirements_path):
             with open(image_requirements_path,"r",encoding="utf-8") as f:
                 IMAGE_REQUIREMENTS = f.read()
+
+        if os.path.exists(analyze_prompt_path):
+            with open(analyze_prompt_path,"r",encoding="utf-8") as f:
+                ANALYZE_PROMPT = f.read()
         
         print("✅ 모든 트렌드 및 BMI 데이터가 메모리에 로드되었습니다.")
     except Exception as e:

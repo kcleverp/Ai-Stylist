@@ -2,25 +2,32 @@
 def sendToDB(json_data, data, supabase_client):
     img_url = data.get("images")
     device_id = data.get("deviceId")
-    closet_id = data.get("closetId")
     name = data.get("name")
-    saved_item = []
+    supabase_client.table("user_ids").upsert({"id":device_id}).execute()
+    supabase_client.table("closets").insert({ "user_id": device_id ,"name":name}).execute()
+    request_id = supabase_client.table("closets").select("id").eq("user_id", device_id).execute()
+    closet_id = request_id.data[0]["id"]
+    saved_closet_items = []
     for item in json_data["closet_items"]:
-        insert_data = {
+        closet_items_data = {
             "closet_id": closet_id,
-            "device_id": device_id,
-            "name": name,
             "item_name": item["item_name"],
+            "for_front": item["for_front"],
             "category": item["category"],
             "sub_category": item["sub_category"],
-            "attributes": item["attributes"],
+            "color": item["color"],
+            "fit": item["fit"],
+            "material": item["material"],
+            "item_coord": item["item_coord"],
+            "detail_info": item["detail_info"],
             "style_tags": item["style_tags"],
             "description": item["description"],
+            "confidence_score": item["confidence_score"],
             "image_url": img_url
         }
-        saved_item.append(insert_data)
-    if saved_item:
-        response =supabase_client.table("closet_items").insert(saved_item).execute()
+        saved_closet_items.append(closet_items_data)
+    if saved_closet_items:
+        response =supabase_client.table("closet_items").insert(saved_closet_items).execute()
         if response:
             print(f"저장 완료")
             return ({
@@ -31,33 +38,39 @@ def sendToDB(json_data, data, supabase_client):
         else:
             return {"status":"failed"}
         
-def load_db_data(supabase_client, user_id, closet_id = None):
+def load_closet_data(supabase_client, user_id):
     try:
-        if (closet_id):
-            response = supabase_client.table("closet_items") \
-                    .select("category, item_name, style_tags") \
-                    .eq("closet_id", closet_id) \
-                    .execute()
-            result = [{"category": item['category'], "item_name": item['item_name'], "style_tags": item['style_tags']} for item in response.data]
-            return result
-        else:
-            response = supabase_client.table("closet_items") \
-                    .select("name, closet_id") \
-                    .eq("device_id", user_id) \
-                    .execute()
-            unique_closets = {item['closet_id']: item['name'] for item in response.data}
-            result = [{"closet_id": c, "name": n} for c, n in unique_closets.items()]
-            return result
+        response = supabase_client.table("closets") \
+                .select("name, id") \
+                .eq("user_id", user_id) \
+                .execute()
+        unique_closets = {item['id']: item['name'] for item in response.data}
+        result = [{"closet_id": c, "name": n} for c, n in unique_closets.items()]
+        return result
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+def load_item_data(supabase_client, closet_id):
+    try:
+        response = supabase_client.table("closet_items") \
+                .select("category","style_tags", "for_front") \
+                .eq("closet_id", closet_id) \
+                .execute()
+        result = [{"category": item['category'], "style_tags": item['style_tags'], "for_front": item['for_front'], } for item in response.data]
+        return result
     except Exception as e:
         return {"status": "error", "message": str(e)}
     
-def edit_db_data(closet_id, new_name, supabase_client):
+def edit_closet_data(closet_id, new_name, supabase_client):
     try:
-        response = supabase_client.table("closet_items") \
+        response = supabase_client.table("closets") \
         .update({"name": new_name}) \
-        .eq("closet_id", closet_id) \
+        .eq("id", closet_id) \
         .execute()
-        result= {"status":"success"}
-        return result
+        if(response):
+            result= {"status":"success"}
+            return result
+        else:
+            return {"status": "error", "message": "수정 실패"}
     except Exception as e:
         return {"status": "error", "message": str(e)}

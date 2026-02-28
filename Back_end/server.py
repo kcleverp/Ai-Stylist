@@ -6,7 +6,7 @@ from google import genai
 from google.genai import types
 from services.imagen import imagen
 from services.analyze import analyze
-from services.aboutDB import sendToDB, load_db_data, edit_db_data
+from services.aboutDB import sendToDB, load_closet_data, edit_closet_data
 from services.flux import flux
 from services.loadData import load_all_data, get_bmi, get_trend
 import services.loadData as loadData
@@ -246,22 +246,19 @@ def analyzeImage():
 @server.route("/requestClosetData", methods=["GET"])
 def requestClosetData():
     user_id = request.args.get('userId')
-    closet_id = request.args.get('closetId')
     if(not user_id):
         return jsonify({"status": "error", "message": "userId가 필요합니다."}), 400
-    
-    response = load_db_data(supabase_client= supabase_client, user_id= user_id, closet_id= closet_id)
-
+    response = load_closet_data(supabase_client= supabase_client, user_id= user_id)
     return jsonify(response)
 
-@server.route("/editData", methods=["PATCH"])
-def editData():
+@server.route("/editClosetData", methods=["PATCH"])
+def editClosetData():
     data = request.json
     closet_id = data.get("closetId")
     new_name = data.get("newName")
     if (not closet_id or not new_name):
         return jsonify({"status": "error", "message": "closetId와 newName이 모두 필요합니다."}), 400
-    response = edit_db_data(closet_id= closet_id, new_name= new_name, supabase_client= supabase_client)
+    response = edit_closet_data(closet_id= closet_id, new_name= new_name, supabase_client= supabase_client)
     return jsonify(response)
 if __name__ == "__main__":
     # Render가 주는 PORT 환경변수를 사용하고, 없으면 10000을 사용합니다.
