@@ -11,6 +11,7 @@ def analyze(data, client):
                 print(f"이미지 다운로드 중: {url}")
                 response = http_client.get(url)
                 if response.status_code == 200:
+                    image_parts.append(f"Image_ID: {url}")
                     # 'file_uri' 대신 'inline_data'로 실제 이미지 데이터 전달
                     image_parts.append({
                         "inline_data": {

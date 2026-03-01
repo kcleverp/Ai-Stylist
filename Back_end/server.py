@@ -6,7 +6,7 @@ from google import genai
 from google.genai import types
 from services.imagen import imagen
 from services.analyze import analyze
-from services.aboutDB import sendToDB, load_closet_data, edit_closet_data
+from services.aboutDB import sendToDB, load_closet_data, edit_closet_data, load_item_data
 from services.flux import flux
 from services.loadData import load_all_data, get_bmi, get_trend
 import services.loadData as loadData
@@ -260,6 +260,30 @@ def editClosetData():
         return jsonify({"status": "error", "message": "closetId와 newName이 모두 필요합니다."}), 400
     response = edit_closet_data(closet_id= closet_id, new_name= new_name, supabase_client= supabase_client)
     return jsonify(response)
+
+@server.route("/requestItemData", methods=["GET"])
+def requestItemData():
+    auth_header = request.headers.get("Authorization")
+    closet_id = request.headers.get("X-Closet-Id")
+    if auth_header and auth_header.startswith("Bearer "):
+        parts = auth_header.split(" ")
+        if len(parts) > 1:
+            user_id = parts[1]
+        else:
+            return jsonify({"error": "유효하지 않은 인증 형식입니다."}), 401
+    else:
+        return jsonify({"error": "인증 정보가 없습니다."}), 401
+
+    if not closet_id:
+        return jsonify({"error": "옷장 ID가 없습니다."}), 400
+    
+    item_data = load_item_data(supabase_client= supabase_client, user_id= user_id, closet_id= closet_id)
+
+    if(isinstance(item_data, dict) and item_data.get("status") == "error"):
+        return jsonify(item_data), 403
+    
+    return jsonify(item_data)
+
 if __name__ == "__main__":
     # Render가 주는 PORT 환경변수를 사용하고, 없으면 10000을 사용합니다.
     port = int(os.environ.get("PORT", 10000))
