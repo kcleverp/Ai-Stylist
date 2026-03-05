@@ -111,17 +111,15 @@ export const getDeviceId = async() => {
     }
 }
 
-export const sendToAnalyze = async(imgList:ClosetItem[], deviceId:string, name:string, existingClosetId?: string) =>{
+export const sendToAnalyze = async(imgList:ClosetItem[], userId:string, name:string) =>{
     const imgUris = await uploadImage(imgList)
     if(!imgUris){
         alert("옷장 생성 실패")
         return null
     }
     
-    const closetId = existingClosetId || uuidv4()
     const packaged = {
-        deviceId: deviceId,
-        closetId: closetId,
+        userId: userId,
         name: name,
         images: imgUris
     }
@@ -167,12 +165,9 @@ const addNewCloset = async (id:string, name:string) => {
     }
 };
 
-export const loadClosetData = async (userId:string, closetId?:string) => {
+export const loadClosetData = async (userId:string) => {
     try{
-        let url = `${serverUrl}/requestClosetData?userId=${userId}`
-        if (closetId) {
-            url += `&closetId=${closetId}`;
-        }
+        const url = `${serverUrl}/requestClosetData?userId=${userId}`    
         const response = await fetch(url, {
             "method":"GET",
             "headers":{
@@ -194,10 +189,10 @@ export const loadClosetData = async (userId:string, closetId?:string) => {
     }
 }
 
-export const editData = async(closetId: string, name:string ) => {
+export const editClosetData = async(closetId: string, name:string ) => {
     try{
         const data = {"closetId": closetId, "newName": name}
-        const response = await fetch(`${serverUrl}/editData`, {
+        const response = await fetch(`${serverUrl}/editClosetData`, {
             "method": "PATCH",
             "headers": {
                 "Content-Type": "application/json"
@@ -212,5 +207,27 @@ export const editData = async(closetId: string, name:string ) => {
         return answer
     }catch(e){
         alert("서버와 통신에 실패했어요")
+    }
+}
+
+export const loadItemData = async(userId:string, closetId:string) => {
+    try{
+        const url = `${serverUrl}/requestItemData`
+        const response = await fetch(url,{
+            "method": "GET",
+            "headers":{
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${userId}`,
+                "X-Closet-Id": closetId
+            }
+        })
+        if(!response.ok){
+            alert("옷장 아이템 로드에 실패했어요")
+            return null
+        }  
+        const answer = await response.json()
+        return answer
+    }catch(e){
+        alert("실패")
     }
 }

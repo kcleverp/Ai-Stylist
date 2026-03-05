@@ -1,4 +1,5 @@
 import { ImageSourcePropType } from "react-native"
+import { JSX } from "react"
 export type FontVariants = "Bold" | "SemiBold" | "Medium" | "Regular"
 
 export interface Setting{
@@ -8,7 +9,14 @@ export interface Setting{
   weight:number
   bmi:number
 }
-
+export interface Data{
+    map(arg0: (item: any) => JSX.Element): import("react").ReactNode
+    category:string,
+    style_tags:string[],
+    for_front:string,
+    item_coord:number[],
+    image_url:string,
+}
 export interface RecommendationRequest{
   userId:string,
   userInput:string,

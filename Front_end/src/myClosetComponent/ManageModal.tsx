@@ -2,7 +2,7 @@ import {Modal, View, StyleSheet, TextInput} from "react-native"
 import { useState } from "react"
 import AppText from "../component/AppText"
 import Button from "../component/Button"
-import { editData } from "../services/api"
+import { editClosetData } from "../services/api"
 interface props {
     visible:boolean,
     onClose:() => void,
@@ -43,7 +43,7 @@ export default function ManageModal({visible, onClose, data, setData, del, close
                                     alert("새로운 이름을 입력해주세요!");
                                     return null;
                                 }
-                                const response = await editData(closetId, name)
+                                const response = await editClosetData(closetId, name)
                                 if(response){
                                     const editedList = data.map((item:any) => (
                                     item.closet_id === closetId ? {...item, name: name} : item))

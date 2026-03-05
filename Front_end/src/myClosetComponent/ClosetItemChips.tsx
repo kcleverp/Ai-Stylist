@@ -1,37 +1,40 @@
 import { ScrollView, StyleSheet, View } from "react-native"
 import Button from "../component/Button"
-import { useNavigateTo } from "../services/useNavigateTo"
+import { Data } from "../types/schema"
 import AppText from "../component/AppText"
 import { useState } from "react"
-import ManageModal from "./ManageModal"
+import ImageViewer from "../component/ImageViewer"
+
 interface prop{
-    data:any,
-    setData:(para:any[]) => void
+    data:Data,
+    setData:(para:Data) => void
 }
 
-export default function ClosetChips({data, setData}:prop){
-    const { navigateTo } = useNavigateTo()
+export default function ClosetItemChips({data, setData}:prop){
     const [isVisible, setIsVisible] = useState<boolean>(false)
-    const [pickedCloset, setPickedCloset] = useState<string>("")
+    const [pickedItem, setPickedItem] = useState<string>("")
+    const [isLoading, setIsLoading] = useState<boolean>(true)
+    const [currentImg, setCurrentImg] = useState<string>("")
     return(
         <View style={style.container}>
-            <AppText style={style.text}>칩을 길게눌러 수정해 보세요</AppText>
-            <AppText style={style.text}>저장된 옷장</AppText>
-            <ScrollView showsVerticalScrollIndicator={false} style={style.chipContainer} contentContainerStyle={style.chipItemStyle} >
+            <ImageViewer imgUrl={currentImg} isLoading={isLoading} WhenLoadingDone={() => setIsLoading(false)}/>
+            <AppText style={style.text}>저장된 아이템</AppText>
+            <ScrollView showsHorizontalScrollIndicator={false} style={style.chipContainer} contentContainerStyle={style.chipItemStyle} >
                 {data && data.map((item:any) => (
                     <Button
-                    key={item.closet_id}
-                    label={item.name}
-                    styles={style.chip}
+                    key={item.id}
+                    label={item.for_front}
+                    styles={(pickedItem === item.id) ? [style.chip, style.selected] : style.chip}
                     fontColor="#dcd4d4"
-                    onPress={() => navigateTo("/ClosetItems", {closetId: item.closet_id})}
+                    onPress={() => {
+                        setCurrentImg(item.image_url)
+                        console.log(item.image_url)}}
                     onLongPress={() => {
-                        setPickedCloset(item.closet_id)
+                        setPickedItem(item.id)
                         setIsVisible(true)}}
                     />
                 ))}
             </ScrollView>
-            <ManageModal visible={isVisible} onClose={() => setIsVisible(false)} data ={data} setData={setData} del={() => alert("개발중")} closetId={pickedCloset}/>  
         </View>
     )
 }
@@ -40,6 +43,10 @@ const style = StyleSheet.create({
     container:{
         flex:1,
         padding:20,
+    },
+    selected:{
+        backgroundColor:"#171717",
+        borderRadius:10,
     },
     chipItemStyle:{
         flexDirection:"row",

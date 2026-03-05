@@ -6,6 +6,7 @@ import { Contents } from "../types/schema"
 import { Modal, StyleSheet, View } from "react-native"
 import {useState} from "react"
 import Hashtags from "./Hashtags"
+import { requestImagen } from "../services/api"
 
 type props = {
     data: Contents|null
@@ -17,13 +18,19 @@ type props = {
 }
 export default function ResultModal({data, gender, isVisible, onClose, isLoading, WhenLoadingDone}:props){
     const recommendation = data?.data.recommendation
-    const [currentIndex, setCurrentIndex] = useState(0);
     const {imgUrl = null, for_image = null} = recommendation || {}
     const {for_answer = null, style_analysis = null , hashtags = null} =  recommendation?.style || {}
     
-
     const [isDetailsVisible, setIsDetailsVisible] = useState<boolean>(false) 
     const onDetailsClose = () => setIsDetailsVisible(false)
+    const loadUrl = async() => {
+        if(!for_image){
+            return null
+        }
+        const newUrl = await requestImagen(for_image, gender)
+        return newUrl
+    }
+
     return(
         <Modal animationType="slide" transparent={true} visible={isVisible} onRequestClose={onClose}>
             <View style={style.modalContainer}>
@@ -32,7 +39,8 @@ export default function ResultModal({data, gender, isVisible, onClose, isLoading
                 </View>
                 <AppText style={style.text}>이런 코디 어때요?</AppText>
                 <View style={style.imgContainer}>
-                    <ImageViewer isLoading={isLoading} gender={gender} WhenLoadingDone={WhenLoadingDone} imgUrl = {imgUrl} forImage = {for_image} />
+                    <ImageViewer isLoading={isLoading} 
+                    loadUrl={loadUrl} WhenLoadingDone={WhenLoadingDone} imgUrl = {imgUrl}  />
                     <View style={style.hashtag}>
                         <Hashtags hashtags={hashtags}/>
                     </View>

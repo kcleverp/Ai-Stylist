@@ -6,45 +6,39 @@ import Button from "./Button";
 import AppText from "./AppText";
 type props = {
     imgUrl: string | ImageSourcePropType | null
-    gender: string
-    forImage: ForImage | null
+    loadUrl?: (() => Promise<string>) | (() => string)
     isLoading: boolean
     WhenLoadingDone: () => void
 }
 
-
-
-export default function ImageViewer({imgUrl, gender, forImage, isLoading, WhenLoadingDone}:props){
+export default function ImageViewer({imgUrl, loadUrl, isLoading, WhenLoadingDone}:props){
     
     const [Url,setUrl] = useState<string|ImageSourcePropType|null>(imgUrl)
+    const [isRetry, setIsRetry] = useState<boolean>(false)
     
     useEffect(() => {
         setUrl(imgUrl);
     }, [imgUrl]);
 
-    const onPress = async() => {
-        setIsRetry(true)
-        if (forImage){
-            setUrl(await requestImagen(forImage, gender))
-        }
-        setIsRetry(false)
-    }
-
     const serverUrl = process.env.EXPO_PUBLIC_SERVER_URL;
 
     const displayUrl = Url ? `${serverUrl}/${Url}` : undefined
         
-    const [isRetry, setIsRetry] = useState<boolean>(false)
 
     return(
         <View style={style.container}>
             <View style={style.loadingOverLay}>
                 {(Url !== "failed" || isRetry) &&
                     <ActivityIndicator animating={isLoading} size="large"/>}
-                {(Url === "failed" && !isRetry) &&
+                {(Url === "failed" && !isRetry && loadUrl) &&
                     <View style={style.failedContainer}>
                         <AppText variant="SemiBold" style={style.text}>어라 이미지를 생성하지 못했어요</AppText>
-                        <Button variant="Bold" fontColor="#dcd4d4" styles={style.button} fontSize={18} label="재시도" onPress ={() => onPress()}/>
+                        <Button variant="Bold" fontColor="#dcd4d4" styles={style.button} fontSize={18} label="재시도" 
+                        onPress ={async() => {
+                            setIsRetry(true)
+                            const newUrl = await loadUrl()
+                            setUrl(newUrl)
+                            setIsRetry(false)}}/>
                     </View>}
             </View>
             {Url && Url !== "failed" &&
