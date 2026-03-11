@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 from supabase import create_client
 from google import genai
 from google.genai import types
+from services.check_input import check_input
 from services.imagen import imagen
 from services.analyze import analyze
 from services.aboutDB import sendToDB, load_closet_data, edit_closet_data, load_item_data
@@ -16,8 +17,8 @@ import json
 import os
 import requests
 import pytz
-import re
 import time
+
 server = Flask(__name__)
 CORS(server)
 load_dotenv("important.env")
@@ -64,36 +65,15 @@ def getWeather():
 @server.route("/create",methods=["POST"])
 def createAnswer():
     start = time.time()
-    data = request.json
+    raw_data = request.json
+    data = raw_data.get("data")
+    selected_items = raw_data.get("items")
+    print(selected_items)
     # 유저 입력 필터링
-    raw_userInput = data.get("userInput","")
-    trim_text = " ".join(raw_userInput.split())
-    clean_text = re.sub(r"[ㄱ-ㅎㅏ-ㅣ]+", "", trim_text).strip()
-    forbidden_keywords = ["ignore", "previous instructions", "지침", "시스템", "설정", "프롬프트", "무시" , "instruction", "prompt", "setting", "rule"]
-    if len(clean_text) > 50 or len(clean_text) == 0: #글자 길이 확인
-        clean_text = "일상생활 룩"
-    elif not any(ord('가') <= ord(c) <= ord('힣') or ord('a') <= ord(c.lower()) <= ord('z') for c in clean_text): #유효한 질문인지 확인
-        clean_text = "일상생활 룩"
-    elif any(keyword in clean_text.lower() for keyword in forbidden_keywords): #금지어가 들어가있는지 확인
-        return jsonify({"error":"부적절한 입력", "Code": 500}), 500
-    userInput = clean_text
-    # 유저 정보 로드
-    userInfo = data.get("userInfo")
-    userStyle = userInfo.get('userStyle')
-    userGender = userInfo.get('gender')
-    userHeight = userInfo.get('height')
-    userWeight = userInfo.get('weight')
-    userBmi = userInfo.get("bmi")
-    userId = userInfo.get("userId")
-    #유저 정보 필터링
-    cleanInfo = {
-        "style": userStyle if (userStyle in ["street", "classic", "casual"]) else "casual", 
-        "gender": userGender if (userGender in ["Man","Woman"] ) else "Man",
-        "height":  userHeight if userHeight is not None and (userHeight < 200 and userHeight >= 100 ) else  170 ,
-        "weight":  userWeight if userWeight is not None and (userWeight < 200 and userWeight >= 25 ) else 60,
-        "bmi": userBmi if userBmi is not (userHeight/userWeight) else 170/60
-        }
-    
+    raw_user_info = data.get("userInfo")
+    raw_user_input = data.get("userInput","")
+    user_id = raw_user_info.get("userId")
+    user_input, user_info = check_input(raw_user_input, raw_user_info)
     #날씨 정보 로드
     weatherData = data.get("userWeather")
     description_weather = weatherData.get("description_weather")
@@ -106,11 +86,11 @@ def createAnswer():
     timestamp = now.strftime('%Y-%m-%dT%H:%M:%S%z')
 
     #최종 유저 정보 로드
-    gender = cleanInfo.get("gender")
-    height = cleanInfo.get('height')
-    weight = cleanInfo.get('weight')
-    style = cleanInfo.get('style')
-    bmi = cleanInfo.get("bmi")
+    gender = user_info.get("gender")
+    height = user_info.get('height')
+    weight = user_info.get('weight')
+    style = user_info.get('style')
+    bmi = user_info.get("bmi")
     physique_info = get_bmi(gender, bmi)  # 체형 데이터
     trend_info = get_trend(gender, style) # 트렌드 데이터
     character = f"{gender} with {physique_info}"
@@ -136,7 +116,7 @@ def createAnswer():
             Temp:{temp}℃ (Feels like:{feels_like}℃), Sky:{description_weather}
 
             [User's Message] 
-            {userInput}
+            {user_input}
             """,
             config=types.GenerateContentConfig(
                 system_instruction=final_answer_prompt,
@@ -167,7 +147,7 @@ def createAnswer():
     imageData = answer.get("for_image")
     expected = len(style_label)
     # imgUrl = imagen(imageData, expected, gender, client)
-    imgUrl = flux(imageData, character, userId)
+    imgUrl = flux(imageData, character, user_id)
     
     #프론트 엔드로 데이터 파싱 로직
     style_recommendation = answer.get("style_recommendation")
@@ -182,7 +162,6 @@ def createAnswer():
             },
         },
     }
-
     return jsonify(result)
 
 #이미지 재요청 로직
@@ -201,14 +180,11 @@ def create_image():
 def cleanup_image():
     data = request.json
     imgUrl = data.get("imgUrl")
-
     if (not imgUrl):
         return jsonify({"status": "error", "message": "No path provided"}), 404
     filename = os.path.basename(imgUrl) 
     safe_path = os.path.join("static", filename)
-
     if os.path.exists(safe_path):
-
         try:
             os.remove(safe_path)
             result = {
@@ -234,7 +210,6 @@ def check_server():
         "uptime":uptime_str
     }
     return jsonify(result)
-
 
 @server.route("/analyze", methods=["POST"])
 def analyzeImage():
