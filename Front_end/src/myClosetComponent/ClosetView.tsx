@@ -44,10 +44,7 @@ export default function ClosetView({imgList,setImgList}:imgList){
                         />
                 </View>
                 <View style={style.buttonArea}>
-                    <Button label="📂옷장 목록" fontColor="#dcd4d4" styles={style.button} 
-                    onPress={() => {
-                        navigateTo("/ClosetLibrary")
-                        }}/>
+                    <Button label="📂옷장 목록" fontColor="#dcd4d4" styles={style.button} onPress={() => navigateTo("/ClosetLibrary")}/>
                     <Button label="🔍의류 탐색" fontColor="#dcd4d4" styles={style.button} onPress={() => alert("개발중입니다")}/>
                 </View>
             </View>

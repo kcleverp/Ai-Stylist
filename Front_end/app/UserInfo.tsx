@@ -5,10 +5,12 @@ import Button from "../src/component/Button";
 import NumInput from "../src/component/NumInput";
 import Picker from "../src/component/Picker";
 import AppText from "../src/component/AppText";
+import { useNavigateTo } from "@/src/services/useNavigateTo";
 
 
 export default function UserInfo(){
     const {userInfo, updateUserInfo} = useUserInfoContext()
+    const {navigateTo} = useNavigateTo()
     const items = [
         { label: '스트릿', value: 'street' },
         { label: '클래식', value: 'classic' },
@@ -45,6 +47,7 @@ export default function UserInfo(){
       const bmi = Number((cleanInfo.weight / ((cleanInfo.height / 100) ** 2)).toFixed(1));
       const finalInfo = {...cleanInfo, bmi}
       updateUserInfo(finalInfo)
+      navigateTo("/InputBaseGenerater")
     }
 
     return (
