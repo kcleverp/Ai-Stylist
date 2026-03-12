@@ -2,7 +2,7 @@ import { StyleSheet, TextInput, View } from "react-native"
 import Button from "./Button"
 import { Weather } from "../types/schema"
 import { useNavigateTo } from "../services/useNavigateTo"
-
+import { useSelectedItemsContext } from "../context/SelectedItemsContext"
 type props = {
     sendInfo: () => void
     input: string
@@ -13,6 +13,7 @@ type props = {
 
 export default function FooterPanel({sendInfo, getInput, input, userWeather, userId}:props){
     const isReady = input.trim().length > 0 && userWeather?.temp !== undefined && userId !== "";
+    const {updateSelectedItems} = useSelectedItemsContext()
     const {navigateTo} = useNavigateTo()
     return (
         <View style={style.container}>
@@ -28,7 +29,11 @@ export default function FooterPanel({sendInfo, getInput, input, userWeather, use
                 }}
                 {...({style: { ...style.input, outlineStyle:'none'}} as any)}/>
                 <View style={style.contorlBtn}>
-                    <Button fontColor="rgb(200, 200, 200)" fontSize={14} disabled={!isReady} label="➤" onPress={() => sendInfo()} styles={style.sendBtn}/>
+                    <Button fontColor="rgb(200, 200, 200)" fontSize={14} disabled={!isReady} label="➤" 
+                    onPress={() => {
+                        sendInfo()
+                        updateSelectedItems([])
+                        }} styles={style.sendBtn}/>
                 </View>
             </View>
             <Button label="📂옷장 목록" fontColor="#dcd4d4" styles={style.libraryBtn} onPress={() => navigateTo("/ClosetLibrary")}/>

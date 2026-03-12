@@ -5,23 +5,21 @@ import { Contents, RecommendationRequest } from "@/src/types/schema";
 import { useState } from "react";
 import { Alert, StyleSheet, View} from "react-native";
 import {requestStyleRecommendation, requestDelete} from "@/src/services/api"
-import Button from "@/src/component/Button";
-import FirstLaunchModal from "@/src/component/FirstLaunchModal";
 import { useWeatherContext } from "@/src/context/WeatherContext";
 import { useUserInfoContext } from "@/src/context/UserInfoContext";
 import WeatherCard from "@/src/component/WeatherCard";
 import { useUserIdContext } from "@/src/context/UserIdContext";
+import { useSelectedItemsContext } from "@/src/context/SelectedItemsContext";
 export default function InputBaseGenerater() {
   // state 영역
-
   const {userInfo} = useUserInfoContext()
   const {userWeather} = useWeatherContext()
   const {userId} = useUserIdContext()
+  const {items} = useSelectedItemsContext()
   const [userInput, setUserInput] = useState<string>("")
   const [contents, setContents] = useState<Contents| null>(null)
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false)
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
   //함수 영역
   
   //앱 시작시 날씨정보 로딩
@@ -41,7 +39,7 @@ export default function InputBaseGenerater() {
     const info:RecommendationRequest = {"userId": userId, "userInput":userInput, "userInfo":userInfo, "userWeather":userWeather}
     const attemptFetch = async(retriesLeft:number) => {
         try{
-          const data = await requestStyleRecommendation(info)
+          const data = await requestStyleRecommendation(info, items)
           if (data.status === "failed"){
             if(retriesLeft > 0){
               console.log(`생성 실패, 재시도 남은 횟수:${retriesLeft}`)
@@ -86,10 +84,8 @@ export default function InputBaseGenerater() {
   return (
     <View style={style.container}>
       <WeatherCard/>
-      <FirstLaunchModal isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen}/>
       <AppText style={style.text} variant="Bold">오늘은 어떤 스타일이 좋을까요?</AppText>
       <FooterPanel input={userInput} getInput={getInput} userWeather={userWeather} userId={userId} sendInfo = {sendInfo}/>
-      <Button styles ={style.buttons}fontColor="#dcd4d4" label="개인정보 이용 안내" onPress={() => setIsModalOpen(true)}/>
       <ResultModal isLoading={isLoading} gender={userInfo.gender} WhenLoadingDone={whenLoadingDone} data = {contents} isVisible={isModalVisible} onClose={onClose}/>
     </View>
   );
@@ -107,23 +103,10 @@ const style = StyleSheet.create({
     fontSize:12,
     letterSpacing: 1.5,
   },
-  buttons:{
-    backgroundColor:"#333232c1",
-    borderWidth:1,
-    borderColor: '#434242ac',      
-    borderTopColor: '#555',
-    borderRadius:10,
-    width: 150,
-    height: 50,
-    position:"absolute",
-    bottom:100,
-  },
-  
   text:{
     color:"#dcd4d4",
     fontSize:20,
     letterSpacing: 1.5,
     margin:20,
-  },
- 
+  }, 
 })

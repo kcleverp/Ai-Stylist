@@ -1,18 +1,22 @@
-import { Info, ImgUrl,ForImage, ClosetItem, Closet} from "../types/schema"
-import {v4 as uuidv4} from "uuid"
+import { RecommendationRequest, ImgUrl,ForImage, ClosetItem, Closet} from "../types/schema"
 import { Platform } from "react-native";
 import * as Application from 'expo-application';
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Item } from "../types/schema";
 const serverUrl = process.env.EXPO_PUBLIC_SERVER_URL;
 
-export const requestStyleRecommendation = async(data:Info) => {
+export const requestStyleRecommendation = async(data:RecommendationRequest, items:Item[]) => {
 
+    const postData = {
+        data : data,
+        items: items
+    }
     const response = await fetch(`${serverUrl}/create`, {
         "method":"POST",
         "headers":{
-            "Content-Type":"application/json"
+            "Content-Type":"application/json",
         },
-        "body": JSON.stringify(data)
+        "body": JSON.stringify(postData)
     })
 
     if (!response.ok){
@@ -209,7 +213,6 @@ export const editClosetData = async(closetId: string, name:string ) => {
         alert("서버와 통신에 실패했어요")
     }
 }
-
 export const loadItemData = async(userId:string, closetId:string) => {
     try{
         const url = `${serverUrl}/requestItemData`
