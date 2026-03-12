@@ -27,9 +27,8 @@ export default function ClosetItems(){
     }, [userId, safeClosetId])
     return(
         <View style={styles.container}>
-            <AppText style={styles.text}>추후 업데이트 예정</AppText>
             {itemData &&
-                <ClosetItemChips data = {itemData} setData={setItemData}/>}
+                <ClosetItemChips data = {itemData} closetId ={safeClosetId} setData={setItemData}/>}
         </View>
     )
 }

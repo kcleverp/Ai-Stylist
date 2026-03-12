@@ -9,8 +9,13 @@ export interface Setting{
   weight:number
   bmi:number
 }
+export interface Item{
+    id:string,
+    for_front:string
+}
 export interface Data{
     map(arg0: (item: any) => JSX.Element): import("react").ReactNode
+    id:string,
     category:string,
     style_tags:string[],
     for_front:string,
@@ -29,12 +34,6 @@ export interface Weather{
   weatherIcon: string,
   temp: number,
   feels_like: number
-}
-
-export interface Info{
-    userInput: string
-    userInfo: Setting
-    userWeather: Weather
 }
 
 export type ImgUrl = string | ImageSourcePropType

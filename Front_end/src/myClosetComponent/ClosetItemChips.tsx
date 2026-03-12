@@ -4,17 +4,18 @@ import { Data } from "../types/schema"
 import AppText from "../component/AppText"
 import { useState } from "react"
 import ImageViewer from "../component/ImageViewer"
-
+import { useSelectedItemsContext } from "../context/SelectedItemsContext"
+import { Item } from "../types/schema"
 interface prop{
     data:Data,
     setData:(para:Data) => void
+    closetId:string
 }
-
-export default function ClosetItemChips({data, setData}:prop){
+export default function ClosetItemChips({data, setData, closetId}:prop){
     const [isVisible, setIsVisible] = useState<boolean>(false)
-    const [pickedItem, setPickedItem] = useState<string>("")
     const [isLoading, setIsLoading] = useState<boolean>(true)
     const [currentImg, setCurrentImg] = useState<string>("")
+    const {items, toggleItem} = useSelectedItemsContext()
     return(
         <View style={style.container}>
             <ImageViewer imgUrl={currentImg} isLoading={isLoading} WhenLoadingDone={() => setIsLoading(false)}/>
@@ -24,13 +25,16 @@ export default function ClosetItemChips({data, setData}:prop){
                     <Button
                     key={item.id}
                     label={item.for_front}
-                    styles={(pickedItem === item.id) ? [style.chip, style.selected] : style.chip}
+                    styles={[style.chip, (items.some((data:Item) => data.id === item.id)) && style.selected ]}
                     fontColor="#dcd4d4"
                     onPress={() => {
                         setCurrentImg(item.image_url)
-                        console.log(item.image_url)}}
+                        const itemProp = {id:item.id, for_front:item.for_front, closetId:closetId}
+                        toggleItem(itemProp)
+                        console.log(items)
+                        }
+                    }
                     onLongPress={() => {
-                        setPickedItem(item.id)
                         setIsVisible(true)}}
                     />
                 ))}
@@ -46,7 +50,6 @@ const style = StyleSheet.create({
     },
     selected:{
         backgroundColor:"#171717",
-        borderRadius:10,
     },
     chipItemStyle:{
         flexDirection:"row",

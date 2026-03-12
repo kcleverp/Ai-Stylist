@@ -41,10 +41,13 @@ export const styles = StyleSheet.create({
         gap:5,
     },
     closetContentsContainer:{
-        height: 380, 
+        height: 400, 
         flexGrow: 0,    
         marginBottom: 20,
         marginTop: 20,
+        padding:5,
+        borderRadius: 20,
+        backgroundColor:"#191919",
     },
     closeBtn:{
         width:45,
@@ -99,7 +102,7 @@ export const styles = StyleSheet.create({
     borderTopColor: "#333",
     alignItems: "center",
     justifyContent: "space-around",
-    paddingBottom: 20, 
+    paddingBottom: 30, 
     },
     tabItem: {
         flex: 1,
@@ -109,9 +112,9 @@ export const styles = StyleSheet.create({
     centerButton: {
         width: 70,
         height: 70,
-        borderRadius: 33,
-        backgroundColor: "#e4e1e1", 
-        marginTop: -55, 
+        borderRadius: 30,
+        backgroundColor: "#e8e7e9", 
+        marginTop: -45, 
         justifyContent: "center",
         alignItems: "center",
         shadowColor: "#000",
