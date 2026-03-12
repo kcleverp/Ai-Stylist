@@ -71,7 +71,7 @@ def load_item_data(supabase_client, user_id, closet_id):
                 "style_tags": item['style_tags'], 
                 "for_front": item['for_front'], 
                 "item_coord": item["item_coord"], 
-                "image_url" : item["image_url"]
+                "image_url" : item["image_url"],
             } for item in response.data
         ] 
         return result
@@ -89,5 +89,53 @@ def edit_closet_data(closet_id, new_name, supabase_client):
             return result
         else:
             return {"status": "error", "message": "수정 실패"}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+def load_selected_items(supabase_client, user_id, selected_items):
+    try:
+        closet_map = {}
+        result_map = {}
+        for obj in selected_items:
+            c_id = obj["closetId"]
+            i_id = obj["id"]
+            if c_id not in closet_map:
+                closet_map[c_id] = []
+            closet_map[c_id].append(i_id)
+        print(closet_map)
+        for closet_id, item_list in closet_map.items():
+            print(user_id)
+            check = supabase_client.table("closets") \
+            .select("id") \
+            .eq("id", closet_id) \
+            .eq("user_id", user_id) \
+            .execute()
+            print(check)
+            if len(check.data) == 0:
+                return {"status":"error", "message": "이 옷장에 접근할 권한이 없거나 존재하지 않습니다."}
+    
+            response = supabase_client.table("closet_items") \
+                .select("for_front", "description", "style_tags", "category",) \
+                .eq("closet_id", closet_id) \
+                .in_("id", item_list) \
+                .execute()
+            result = [
+                {   
+                    "for_front": item["for_front"],
+                    "category": item['category'], 
+                    "style_tags":item['style_tags'],
+                    "description": item['description'], 
+                } for item in response.data
+            ] 
+            for obj in result:
+                for_front = obj["for_front"]
+                cate = obj["category"]
+                style = obj["style_tags"]
+                des = obj["description"]
+                if cate not in result_map:
+                    result_map[cate] = []
+                item = {"for_front": for_front, "descriptin": des, "style": style}
+                result_map[cate].append(item)
+        return {"status": "success", "data": result_map}
     except Exception as e:
         return {"status": "error", "message": str(e)}

@@ -7,7 +7,7 @@ from google.genai import types
 from services.check_input import check_input
 from services.imagen import imagen
 from services.analyze import analyze
-from services.aboutDB import sendToDB, load_closet_data, edit_closet_data, load_item_data
+from services.aboutDB import sendToDB, load_closet_data, edit_closet_data, load_item_data, load_selected_items
 from services.flux import flux
 from services.loadData import load_all_data, get_bmi, get_trend
 import services.loadData as loadData
@@ -69,10 +69,11 @@ def createAnswer():
     data = raw_data.get("data")
     selected_items = raw_data.get("items")
     print(selected_items)
+    about_selected = {}
     # 유저 입력 필터링
     raw_user_info = data.get("userInfo")
     raw_user_input = data.get("userInput","")
-    user_id = raw_user_info.get("userId")
+    user_id = data.get("userId")
     user_input, user_info = check_input(raw_user_input, raw_user_info)
     #날씨 정보 로드
     weatherData = data.get("userWeather")
@@ -84,8 +85,11 @@ def createAnswer():
     kst = pytz.timezone('Asia/Seoul')
     now = datetime.now(kst)
     timestamp = now.strftime('%Y-%m-%dT%H:%M:%S%z')
-
+    response = load_selected_items(supabase_client=supabase_client, user_id=user_id, selected_items=selected_items)
+    print(response)
     #최종 유저 정보 로드
+    if(response.get("status") == "success"):
+        about_selected = response.get("data")
     gender = user_info.get("gender")
     height = user_info.get('height')
     weight = user_info.get('weight')
@@ -100,6 +104,9 @@ def createAnswer():
 
     #[STYLE_GUIDELINE]#
     {trend_info}
+
+    #[USER_SELECTED_ITEM]
+    {about_selected}
 
     #[USER_PHYSICAL_SPEC]#
     - Gender: {gender}
