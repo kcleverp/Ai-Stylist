@@ -6,9 +6,10 @@ import { useState } from "react"
 import ImageViewer from "../component/ImageViewer"
 import { useSelectedItemsContext } from "../context/SelectedItemsContext"
 import { Item } from "../types/schema"
+import ItemDelModal from "./ItemDelModal"
 interface prop{
-    data:Data,
-    setData:(para:Data) => void
+    data:Data[],
+    setData:(para:Data[]) => void
     closetId:string
 }
 export default function ClosetItemChips({data, setData, closetId}:prop){
@@ -16,6 +17,7 @@ export default function ClosetItemChips({data, setData, closetId}:prop){
     const [isLoading, setIsLoading] = useState<boolean>(true)
     const [currentImg, setCurrentImg] = useState<string>("")
     const {items, toggleItem} = useSelectedItemsContext()
+    const [itemId, setItemId] = useState<string>("")
     return(
         <View style={style.container}>
             <ImageViewer imgUrl={currentImg} isLoading={isLoading} WhenLoadingDone={() => setIsLoading(false)}/>
@@ -31,14 +33,15 @@ export default function ClosetItemChips({data, setData, closetId}:prop){
                         setCurrentImg(item.image_url)
                         const itemProp = {id:item.id, for_front:item.for_front, closetId:closetId}
                         toggleItem(itemProp)
-                        console.log(items)
                         }
                     }
                     onLongPress={() => {
+                        setItemId(item.id)
                         setIsVisible(true)}}
                     />
                 ))}
             </ScrollView>
+            {/* <ItemDelModal visible={isVisible} onClose={() => setIsVisible(false)} data={data} setData={setData} closetId={closetId} itemId={itemId}/> */}
         </View>
     )
 }

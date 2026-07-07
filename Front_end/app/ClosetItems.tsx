@@ -12,7 +12,7 @@ export default function ClosetItems(){
     const {closetId} = params
     const safeClosetId = Array.isArray(closetId) ? closetId[0] : closetId;
     const {userId} = useUserIdContext()
-    const [itemData,setItemData] = useState<Data>()
+    const [itemData,setItemData] = useState<Data[]>()
     useEffect(() => {
         if (!userId || !safeClosetId) {
             return;

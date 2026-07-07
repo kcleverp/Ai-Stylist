@@ -94,6 +94,7 @@ export interface ClosetItem{
   assetId: string| null | undefined
 }
 export interface imgList{
-    imgList:ClosetItem[]
-    setImgList:(item:ClosetItem[]) => void
+    imgList:ClosetItem[],
+    setImgList:(item:ClosetItem[]) => void,
+    closetId?:string
 }

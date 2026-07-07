@@ -3,6 +3,7 @@ import { useState } from "react"
 import AppText from "../component/AppText"
 import Button from "../component/Button"
 import { editClosetData } from "../services/api"
+import { useNavigateTo } from "../services/useNavigateTo"
 interface props {
     visible:boolean,
     onClose:() => void,
@@ -13,27 +14,28 @@ interface props {
 }
 
 export default function ManageModal({visible, onClose, data, setData, del, closetId}:props){
-    const [isPicked, setIsPicked] = useState<boolean>(false)
+    const [isEdit, setIsEdit] = useState<boolean>(false)
     const [name, setName] = useState<string>("")
+    const {navigateTo} = useNavigateTo()
     return(
         <Modal animationType={"slide"} transparent={true} visible={visible} onRequestClose={onClose}>
             <View style={style.modalContainer}>
                 <View style={style.contentsContainer}>
                     <AppText variant="SemiBold" style={style.mainText}>옷장 편집하기</AppText>
-                    {isPicked && <AppText variant="SemiBold" style={style.text}>새로운 이름을 지어주세요</AppText>}
-                    {!isPicked &&
+                    {isEdit && <AppText variant="SemiBold" style={style.text}>새로운 이름을 지어주세요</AppText>}
+                    {!isEdit &&
                     <View style={style.buttonsContainer}>    
                         <View style={style.buttonContainer}>
-                            <Button styles={style.button} fontColor="#dcd4d4" fontSize={16} label="이름수정하기" 
-                            onPress={() => {
-                                setIsPicked(true)
-                                }}/>
+                            <Button styles={style.button} fontColor="#dcd4d4" fontSize={16} label="이름수정하기" onPress={() => setIsEdit(true)}/>
+                        </View>
+                        <View style={style.buttonContainer}>
+                            <Button styles={style.button} fontColor="#dcd4d4" fontSize={16} label="아이템 추가" onPress={() => navigateTo("/MyCloset", {closetId: closetId, name:data.name})}/>
                         </View>
                         <View style={style.buttonContainer}>
                             <Button styles={style.button} fontColor="#dcd4d4" fontSize={16} label="삭제" onPress= {del}/>
                         </View>
                     </View>}
-                    {isPicked &&
+                    {isEdit &&
                         <View style={style.panel}>
                             <TextInput value={name} onChangeText={(text) => setName(text)} style = {style.input} placeholder="✎ 새로운 옷장이름" placeholderTextColor="rgba(200, 200, 200, 0.7)"/>
                             <Button label="수정⚒" fontColor="#dcd4d4" 
@@ -49,7 +51,7 @@ export default function ManageModal({visible, onClose, data, setData, del, close
                                     item.closet_id === closetId ? {...item, name: name} : item))
                                     setData(editedList)
                                     setName("")
-                                    setIsPicked(false)
+                                    setIsEdit(false)
                                     onClose()
                                 }else{
                                     alert("이름 수정에 실패했어요")
@@ -113,6 +115,8 @@ const style = StyleSheet.create({
     },
     buttonsContainer:{
         flexDirection:"row",
+        flexWrap:"wrap",
+        gap:40,
         flex:1,
     },
     buttonContainer:{

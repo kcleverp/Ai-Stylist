@@ -115,7 +115,7 @@ export const getDeviceId = async() => {
     }
 }
 
-export const sendToAnalyze = async(imgList:ClosetItem[], userId:string, name:string) =>{
+export const sendToAnalyze = async(imgList:ClosetItem[], userId:string, name:string, ExistClosetId?:string) =>{
     const imgUris = await uploadImage(imgList)
     if(!imgUris){
         alert("옷장 생성 실패")
@@ -125,7 +125,8 @@ export const sendToAnalyze = async(imgList:ClosetItem[], userId:string, name:str
     const packaged = {
         userId: userId,
         name: name,
-        images: imgUris
+        images: imgUris,
+        closetId: ExistClosetId || null
     }
     try{
         const response = await fetch(`${serverUrl}/analyze`,{
@@ -231,6 +232,29 @@ export const loadItemData = async(userId:string, closetId:string) => {
         const answer = await response.json()
         return answer
     }catch(e){
-        alert("실패")
+        alert("옷장 아이템 로드 서버 통신에 실패했어요")
+    }
+}
+
+export const delItemData = async(userId:string, closetId:string, itemId:string ) => {
+    try{
+        const url = `${serverUrl}/delItemData`
+        const response = await fetch(url, {
+            "method": "DELETE",
+            "headers":{
+                "Contents-Type": "application/json",
+                "Authorization": `Bearer ${userId}`,
+                "X-Closet-Id": closetId,
+                "X-Item-Id": itemId
+            }
+        })
+        if(!response){
+            alert("옷장 아이템 삭제에 실패했어요")
+            return null
+        }
+        const answer = await response.json()
+        return answer
+    }catch(e){
+        alert("아이템 삭제 서버 통신에 실패했어요")
     }
 }

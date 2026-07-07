@@ -265,6 +265,12 @@ def requestItemData():
         return jsonify(item_data), 403
     
     return jsonify(item_data)
+@server.route("/delItemData", methods=["DELETE"])
+def delItemData():
+    auth_header = request.headers.get("Authorization")
+    closet_id = request.headers.get("X-Closet-Id")
+    item_id = request.headers.get("X-Item-Id")
+    return None
 
 if __name__ == "__main__":
     # Render가 주는 PORT 환경변수를 사용하고, 없으면 10000을 사용합니다.

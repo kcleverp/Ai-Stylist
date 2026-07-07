@@ -8,7 +8,7 @@ import { styles } from "../styles/AppStyle";
 import { sendToAnalyze } from "../services/api";
 import { useUserIdContext } from "../context/UserIdContext";
 import { useNavigateTo } from "../services/useNavigateTo";
-export default function ClosetView({imgList,setImgList}:imgList){
+export default function ClosetView({imgList, setImgList, closetId}:imgList){
     const [name, setName] = useState<string>("")
     const removeItem = (id:string) => {
         setImgList(imgList.filter(item => item.id !== id))
@@ -30,15 +30,17 @@ export default function ClosetView({imgList,setImgList}:imgList){
             </ScrollView>
             <View style={style.footerArea}>
                 <View style={style.panel}>
-                    <TextInput value={name} onChangeText={(text) => setName(text)} style = {style.input} placeholder="✎ 새로운 옷장이름" placeholderTextColor="rgb(200, 200, 200)"/>
-                    <Button label="생성⚒" fontColor="#dcd4d4" 
+                    {!closetId &&
+                        <TextInput value={name} onChangeText={(text) => setName(text)} style = {style.input} 
+                        placeholder={"✎ 새로운 옷장이름"} placeholderTextColor="rgb(200, 200, 200)"/>}
+                    <Button label="등록⚒" fontColor="#dcd4d4" 
                     styles={(!userId || !name) ? {...style.closetSaveBtn, opacity: 0.5} : style.closetSaveBtn} 
                     onPress={() => {
                         if(!userId || !name){
                             alert("사용자님의 정보를 불러오고 있어요. 잠시만 기다려주세요!");
                             return null;
                         }
-                        sendToAnalyze(imgList, userId, name)
+                        sendToAnalyze(imgList, userId, name, closetId)
                         setName("")
                         setImgList([])}}
                         />
@@ -71,7 +73,7 @@ const style = StyleSheet.create({
         
     },
     input:{
-        height:50,
+        height:40,
         width:200,
         color:"#dcd4d4",
         fontSize:14,
@@ -79,11 +81,11 @@ const style = StyleSheet.create({
         textAlignVertical: 'center',
         includeFontPadding: false,
         outline:"none",
+        left:30,
     },
     panel:{
         flexDirection:"row",
         borderRadius:25,
-        justifyContent:"center",
         alignItems:"center",
         height:50,
         width:300,
@@ -93,6 +95,8 @@ const style = StyleSheet.create({
         width: 50,
         marginLeft:30,
         height: 40,
-        alignSelf:"center"
+        alignSelf:"center",
+        position:"absolute",
+        right:5
     },
 })
