@@ -57,7 +57,6 @@ def flux(imageData, character, userId=None):
         
         if flux_response:
             fal_url = flux_response.get("images")[0].get("url")
-            print(flux_response)
 
             response = requests.get(fal_url)
 
