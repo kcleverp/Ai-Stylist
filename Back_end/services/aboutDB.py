@@ -1,11 +1,20 @@
 
 def sendToDB(json_data, data, supabase_client):
     user_id = data.get("userId")
-    name = data.get("name")
+    exist_closet_id = data.get("closetId")
+    print(exist_closet_id)
     supabase_client.table("user_ids").upsert({"id":user_id}).execute()
-    supabase_client.table("closets").insert({ "user_id": user_id ,"name":name}).execute()
-    request_id = supabase_client.table("closets").select("id").eq("user_id", user_id).execute()
-    closet_id = request_id.data[0]["id"]
+    if(exist_closet_id is not None):
+        closet_id = exist_closet_id
+        raw_name = supabase_client.table("closets") \
+                .select("name") \
+                .eq("id", closet_id) \
+                .execute()
+        name = raw_name.data[0]["name"]
+    else:
+        name = data.get("name")
+        request_id = supabase_client.table("closets").insert({ "user_id": user_id ,"name":name}).execute()
+        closet_id = request_id.data[0]["id"]
     saved_closet_items = []
     for item in json_data["closet_items"]:
         closet_items_data = {
@@ -138,4 +147,11 @@ def load_selected_items(supabase_client, user_id, selected_items):
                 result_map[cate].append(item)
         return {"status": "success", "data": result_map}
     except Exception as e:
+        return {"status": "error", "message": str(e)}
+    
+def del_item(supabase_client, user_id, closet_id, item_id):
+    try:
+        pass
+    except Exception as e:
+        pass
         return {"status": "error", "message": str(e)}
